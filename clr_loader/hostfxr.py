@@ -11,6 +11,8 @@ __all__ = ["HostFxr"]
 class HostFxr:
     # TODO: Allow generating runtime_config
     def __init__(self, runtime_config, dotnet_root=None):
+        self._handle = None
+
         if not dotnet_root:
             dotnet_root = os.environ.get("DOTNET_ROOT", None)
 
@@ -19,7 +21,12 @@ class HostFxr:
             if not dotnet_path:
                 raise RuntimeError("Can not determine dotnet root")
 
-            dotnet_root = os.path.dirname(os.readlink(dotnet_path))
+            try:
+                dotnet_path = os.readlink(dotnet_path)
+            except OSError:
+                pass
+
+            dotnet_root = os.path.dirname(dotnet_path)
 
         self._dll = load_hostfxr(dotnet_root)
         self._dotnet_root = dotnet_root
@@ -93,7 +100,7 @@ class HostFxrProps:
 def _get_handle(dll, dotnet_root, runtime_config):
     params = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
-    params.dotnet_root = ffi.new("char[]", encode(dotnet_root))
+    params.dotnet_root = ffi.new("char_t[]", encode(dotnet_root))
 
     handle_ptr = ffi.new("hostfxr_handle*")
 

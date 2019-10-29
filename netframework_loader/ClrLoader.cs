@@ -49,18 +49,27 @@ namespace ClrLoader
             [MarshalAs(UnmanagedType.LPUTF8Str)] string function
         )
         {
-            var domainObj = AppDomain.CurrentDomain;
-            if (domain != IntPtr.Zero)
+            try
             {
-                var handle = GCHandle.FromIntPtr(domain);
-                domainObj = (AppDomain)handle.Target;
+                var domainObj = AppDomain.CurrentDomain;
+                if (domain != IntPtr.Zero)
+                {
+                    var handle = GCHandle.FromIntPtr(domain);
+                    domainObj = (AppDomain)handle.Target;
+                }
+
+                var assembly = domainObj.Load(AssemblyName.GetAssemblyName(assemblyPath));
+                var type = assembly.GetType(typeName, throwOnError: true);
+                Print($"Loaded type {type}");
+                var deleg = Delegate.CreateDelegate(typeof(EntryPoint), type, function);
+
+                return Marshal.GetFunctionPointerForDelegate(deleg);
             }
-
-            var assembly = domainObj.Load(AssemblyName.GetAssemblyName(assemblyPath));
-            var type = assembly.GetType(typeName);
-            var deleg = Delegate.CreateDelegate(typeof(EntryPoint), type, function);
-
-            return Marshal.GetFunctionPointerForDelegate(deleg);
+            catch (Exception exc)
+            {
+                Print($"Exception in {nameof(GetFunction)}: {exc.GetType().Name} {exc.Message}\n{exc.StackTrace}");
+                return IntPtr.Zero;
+            }
         }
 
         [DllExport("pyclr_close_appdomain", CallingConvention.Cdecl)]

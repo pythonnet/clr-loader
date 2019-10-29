@@ -22,7 +22,7 @@ class Framework:
             function.encode("utf8"),
         )
 
-        return ffi.cast("entry_point*", func)
+        return func
     
     def __del__(self):
         if self._domain and _FW:

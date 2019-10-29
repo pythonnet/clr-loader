@@ -3,13 +3,13 @@ import shutil
 
 import cffi
 
-from . import coreclr, hostfxr, mono
+from . import coreclr, hostfxr, mono, framework
 
-__all__ = ["ffi", "load_coreclr", "load_hostfxr", "load_mono"]
+__all__ = ["ffi", "load_coreclr", "load_hostfxr", "load_mono", "load_framework"]
 
 ffi = cffi.FFI()
 
-for cdef in coreclr.cdef + hostfxr.cdef + mono.cdef:
+for cdef in coreclr.cdef + hostfxr.cdef + mono.cdef + framework.cdef:
     ffi.cdef(cdef)
 
 
@@ -36,6 +36,12 @@ def load_mono(path=None, gc=None):
         path = find_library(f"mono{gc or ''}-2.0")
         if path is None:
             raise RuntimeError("Could not find libmono")
+
+    return ffi.dlopen(path)
+
+
+def load_framework():
+    path = "netframework_loader/bin/x64/Debug/net472/ClrLoader.dll"
 
     return ffi.dlopen(path)
 

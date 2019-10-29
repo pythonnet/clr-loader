@@ -1,7 +1,8 @@
 # .NET Core build folders
-example/bin
-example/obj
-example/out
+bin/
+out/
+obj/
+.vs/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

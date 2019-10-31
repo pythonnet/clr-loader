@@ -35,6 +35,10 @@ class HostFxr:
         self._load_func = _get_load_func(self._dll, self._handle)
 
     def get_callable(self, assembly_path, typename, function):
+        # Append assembly name to typename
+        assembly_name, _ = os.path.splitext(os.path.basename(assembly_path))
+        typename = f"{typename}, {assembly_name}"
+
         delegate_ptr = ffi.new("void**")
         res = self._load_func(
             encode(assembly_path),

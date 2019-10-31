@@ -64,8 +64,12 @@ class MonoMethod:
         exception = ffi.new("MonoObject**")
         params = ffi.new("void*[2]")
 
-        params[0] = ffi.new("void**", ptr)
-        params[1] = ffi.new("int*", size)
+        # Keep these alive until the function is called by assigning them locally
+        ptr_ptr = ffi.new("void**", ptr)
+        size_ptr = ffi.new("int32_t*", size)
+
+        params[0] = ptr_ptr
+        params[1] = size_ptr
 
         res = _MONO.mono_runtime_invoke(self._ptr, ffi.NULL, params, exception)
         _check_result(res, "Failed to call method")

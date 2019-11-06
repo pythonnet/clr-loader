@@ -2,7 +2,9 @@
 
 S=`dirname $0`
 P=netfx_loader/
-O=clr_loader/ffi/dlls/
+O=$S/clr_loader/ffi/dlls/
 
-dotnet build $P -r win-x86 -o $O/x86
-dotnet build $P -r win-x64 -o $O/amd64
+mkdir -p "$O" || exit -1
+
+dotnet build "$P" -r win-x86 -o "$O/x86" || exit -1
+dotnet build "$P" -r win-x64 -o "$O/amd64" || exit -1

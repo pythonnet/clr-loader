@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net47</TargetFrameworks>
-    <Platforms>x64;x86</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NXports" Version="0.2.0-dev" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2">
+    <PackageReference Include="NXports" Version="0.2.0" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="$(MSBuildRuntimeType) == 'Core'">
+      <Version>1.0.0-preview.2</Version>
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(Platform)' == 'x86'">
+  <PropertyGroup Condition=" '$(RuntimeIdentifier)' == 'win-x86'">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x64'">
+  <PropertyGroup Condition=" '$(RuntimeIdentifier)' == 'win-x64'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 </Project>

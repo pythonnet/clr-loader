@@ -13,7 +13,6 @@ class ClrError(Exception):
         else:
             return f"{hex(self.hresult)}"
 
-    
     def __repr__(self):
         return f"<ClrError {str(self)}>"
 

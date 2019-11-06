@@ -19,5 +19,6 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS :: MacOS X",
     ],
+    package_data={"clr_loader.ffi": ["dlls/x86/*", "dlls/amd64/*"]},
     packages=["clr_loader", "clr_loader.ffi", "clr_loader.util"],
 )

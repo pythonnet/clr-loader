@@ -20,4 +20,3 @@ def get_runtimes():  # -> List[Runtime]
         runtimes.append(Runtime(name=name, version=version, path=path))
 
     return runtimes
-

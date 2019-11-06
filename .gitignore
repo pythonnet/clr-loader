@@ -71,3 +71,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Compiled DLLs
+clr_loader/ffi/dlls/*

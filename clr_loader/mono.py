@@ -45,8 +45,7 @@ class MethodDesc:
     def __init__(self, typename, function):
         self._desc = f"{typename}:{function}"
         self._ptr = _MONO.mono_method_desc_new(
-            self._desc.encode("utf8"),
-            1 # include_namespace
+            self._desc.encode("utf8"), 1  # include_namespace
         )
 
     def search(self, image):
@@ -56,10 +55,11 @@ class MethodDesc:
         if _MONO:
             _MONO.mono_method_desc_free(self._ptr)
 
+
 class MonoMethod:
     def __init__(self, domain, ptr):
         self._ptr = ptr
-    
+
     def __call__(self, ptr, size):
         exception = ffi.new("MonoObject**")
         params = ffi.new("void*[2]")

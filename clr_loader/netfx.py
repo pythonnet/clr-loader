@@ -1,14 +1,14 @@
-from .ffi import ffi, load_framework
+from .ffi import ffi, load_netfx
 
 
 _FW = None
 
 
-class Framework:
+class NetFx:
     def __init__(self, name=None, config_file=None):
         global _FW
         if _FW is None:
-            _FW = load_framework()
+            _FW = load_netfx()
 
         self._domain = _FW.pyclr_create_appdomain(
             name or ffi.NULL, config_file or ffi.NULL
@@ -23,7 +23,7 @@ class Framework:
         )
 
         return func
-    
+
     def __del__(self):
         if self._domain and _FW:
             _FW.pyclr_close_appdomain(self._domain)

@@ -34,6 +34,7 @@ class Assembly:
 
     def __getitem__(self, name):
         return self.get_function(name)
+
     def __repr__(self):
         return f"<Assembly {self._path} in {self._runtime}>"
 
@@ -45,6 +46,7 @@ class Runtime:
     @classmethod
     def get_mono(cls, domain=None):
         from .mono import Mono
+
         impl = Mono(domain=domain)
         return cls(impl)
 
@@ -56,10 +58,10 @@ class Runtime:
         return cls(impl)
 
     @classmethod
-    def get_framework(cls, name=None, config_file=None):
-        from .framework import Framework
+    def get_netfx(cls, name=None, config_file=None):
+        from .netfx import NetFx
 
-        impl = Framework(name=name, config_file=config_file)
+        impl = NetFx(name=name, config_file=config_file)
         return cls(impl)
 
     def get_assembly(self, path):

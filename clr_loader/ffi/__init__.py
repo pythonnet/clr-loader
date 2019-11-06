@@ -1,15 +1,16 @@
+import sys
 import os
 import shutil
 
 import cffi
 
-from . import coreclr, hostfxr, mono, framework
+from . import coreclr, hostfxr, mono, netfx
 
-__all__ = ["ffi", "load_coreclr", "load_hostfxr", "load_mono", "load_framework"]
+__all__ = ["ffi", "load_coreclr", "load_hostfxr", "load_mono", "load_netfx"]
 
 ffi = cffi.FFI()
 
-for cdef in coreclr.cdef + hostfxr.cdef + mono.cdef + framework.cdef:
+for cdef in coreclr.cdef + hostfxr.cdef + mono.cdef + netfx.cdef:
     ffi.cdef(cdef)
 
 
@@ -40,15 +41,22 @@ def load_mono(path=None, gc=None):
     return ffi.dlopen(path)
 
 
-def load_framework():
-    path = "netframework_loader/bin/x64/Debug/net472/ClrLoader.dll"
+def load_netfx():
+    if sys.platform != "win32":
+        raise RuntimeError(".NET Framework is only supported on Windows")
+
+    dirname = os.path.join(os.path.dirname(__file__), "dlls")
+    if sys.maxsize > 2 ** 32:
+        arch = "amd64"
+    else:
+        arch = "x86"
+    
+    path = os.path.join(dirname, arch, "ClrLoader.dll")
 
     return ffi.dlopen(path)
 
 
 def _get_dll_name(name):
-    import sys
-
     if sys.platform == "win32":
         return f"{name}.dll"
     elif sys.platform == "darwin":

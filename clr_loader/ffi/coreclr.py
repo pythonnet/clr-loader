@@ -1,4 +1,5 @@
-cdef = ["""
+cdef = [
+    """
 __stdcall unsigned int coreclr_initialize(
     const char* exePath,
     const char* appDomainFriendlyName,
@@ -28,4 +29,5 @@ __stdcall unsigned int coreclr_create_delegate(
 );
 
 __stdcall int coreclr_shutdown(void* hostHandle, unsigned int domainId);
-"""]
+"""
+]

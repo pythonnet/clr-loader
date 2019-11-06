@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using RGiesecke.DllExport;
+using NXPorts.Attributes;
 
 namespace ClrLoader
 {
@@ -44,9 +44,9 @@ namespace ClrLoader
         [DllExport("pyclr_get_function", CallingConvention.Cdecl)]
         public static IntPtr GetFunction(
             IntPtr domain,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string assemblyPath,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string typeName,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string function
+            [MarshalAs(UnmanagedType.LPStr)] string assemblyPath,
+            [MarshalAs(UnmanagedType.LPStr)] string typeName,
+            [MarshalAs(UnmanagedType.LPStr)] string function
         )
         {
             try

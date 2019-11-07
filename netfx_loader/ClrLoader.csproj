@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NXports" Version="0.2.0" />
+    <PackageReference Include="NXPorts" Version="0.2.0-p-52ea1696deff18634a6e45d34b8c6108161401f3" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Condition="$(MSBuildRuntimeType) == 'Core'">
       <Version>1.0.0-preview.2</Version>
       <PrivateAssets>all</PrivateAssets>

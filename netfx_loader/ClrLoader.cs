@@ -8,6 +8,8 @@ using NXPorts.Attributes;
 
 namespace ClrLoader
 {
+    using DllExportAttribute = ExportAttribute;
+    
     public static class ClrLoader
     {
         delegate int EntryPoint(IntPtr buffer, int size);

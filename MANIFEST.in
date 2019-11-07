@@ -1,0 +1,2 @@
+include netfx_loader/*.sln netfx_loader/*.csproj netfx_loader/*.cs
+recursive-exclude clr_loader/ffi/dlls *.dll

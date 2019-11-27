@@ -63,7 +63,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     python_requires=">=3.3",
-    install_requires=["cffi"],
+    install_requires=["cffi>=1.13"],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

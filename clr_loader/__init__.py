@@ -2,7 +2,7 @@ from os.path import basename
 from .ffi import ffi
 
 
-__all__ = ["Runtime"]
+__all__ = ["get_mono", "get_netfx", "get_coreclr"]
 
 
 class ClrFunction:
@@ -43,29 +43,29 @@ class Runtime:
     def __init__(self, impl):
         self._impl = impl
 
-    @classmethod
-    def get_mono(cls, domain=None):
-        from .mono import Mono
-
-        impl = Mono(domain=domain)
-        return cls(impl)
-
-    @classmethod
-    def get_coreclr(cls, runtime_config, dotnet_root=None):
-        from .hostfxr import HostFxr
-
-        impl = HostFxr(runtime_config=runtime_config, dotnet_root=dotnet_root)
-        return cls(impl)
-
-    @classmethod
-    def get_netfx(cls, name=None, config_file=None):
-        from .netfx import NetFx
-
-        impl = NetFx(name=name, config_file=config_file)
-        return cls(impl)
-
     def get_assembly(self, path):
         return Assembly(self._impl, path)
 
     def __getitem__(self, path):
         return self.get_assembly(path)
+
+
+def get_mono(cls, domain=None):
+    from .mono import Mono
+
+    impl = Mono(domain=domain)
+    return cls(impl)
+
+
+def get_coreclr(cls, runtime_config, dotnet_root=None):
+    from .hostfxr import HostFxr
+
+    impl = HostFxr(runtime_config=runtime_config, dotnet_root=dotnet_root)
+    return cls(impl)
+
+
+def get_netfx(cls, name=None, config_file=None):
+    from .netfx import NetFx
+
+    impl = NetFx(name=name, config_file=config_file)
+    return cls(impl)

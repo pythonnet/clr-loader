@@ -1,4 +1,4 @@
-from . import ClrError
+from .clr_error import ClrError
 
 
 def get_coreclr_error(hresult):

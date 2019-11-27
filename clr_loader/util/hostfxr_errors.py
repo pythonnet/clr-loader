@@ -1,4 +1,4 @@
-from . import ClrError
+from .clr_error import ClrError
 
 __all__ = ["get_hostfxr_error"]
 

@@ -50,7 +50,7 @@ def load_netfx():
         arch = "amd64"
     else:
         arch = "x86"
-    
+
     path = os.path.join(dirname, arch, "ClrLoader.dll")
 
     return ffi.dlopen(path)

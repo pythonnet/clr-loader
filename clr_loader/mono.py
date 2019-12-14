@@ -90,6 +90,7 @@ def initialize(path=None, gc=None):
 
 
 def _release():
+    global _MONO, _ROOT_DOMAIN
     if _ROOT_DOMAIN is not None and _MONO is not None:
         _MONO.mono_jit_cleanup(_ROOT_DOMAIN)
         _MONO = None

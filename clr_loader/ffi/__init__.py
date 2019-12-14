@@ -1,6 +1,7 @@
-import sys
+import glob
 import os
 import shutil
+import sys
 
 import cffi
 
@@ -21,13 +22,16 @@ def load_coreclr(runtime):
 
 
 def load_hostfxr(dotnet_root):
-    hostfxr_version = "3.0.0"
     hostfxr_name = _get_dll_name("hostfxr")
-    hostfxr_path = os.path.join(
-        dotnet_root, "host", "fxr", hostfxr_version, hostfxr_name
-    )
+    hostfxr_path = os.path.join(dotnet_root, "host", "fxr", "3.*", hostfxr_name)
 
-    return ffi.dlopen(hostfxr_path)
+    for hostfxr_path in reversed(sorted(glob.glob(hostfxr_path))):
+        try:
+            return ffi.dlopen(hostfxr_path)
+        except Exception:
+            pass
+
+    raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}")
 
 
 def load_mono(path=None, gc=None):

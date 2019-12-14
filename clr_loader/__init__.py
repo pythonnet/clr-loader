@@ -50,22 +50,22 @@ class Runtime:
         return self.get_assembly(path)
 
 
-def get_mono(cls, domain=None):
+def get_mono(domain=None):
     from .mono import Mono
 
     impl = Mono(domain=domain)
-    return cls(impl)
+    return Runtime(impl)
 
 
-def get_coreclr(cls, runtime_config, dotnet_root=None):
+def get_coreclr(runtime_config, dotnet_root=None):
     from .hostfxr import HostFxr
 
     impl = HostFxr(runtime_config=runtime_config, dotnet_root=dotnet_root)
-    return cls(impl)
+    return Runtime(impl)
 
 
-def get_netfx(cls, name=None, config_file=None):
+def get_netfx(name=None, config_file=None):
     from .netfx import NetFx
 
     impl = NetFx(name=name, config_file=config_file)
-    return cls(impl)
+    return Runtime(impl)

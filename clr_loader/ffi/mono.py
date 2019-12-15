@@ -10,6 +10,7 @@ typedef struct _MonoMethod MonoMethod;
 typedef struct _MonoObject MonoObject;
 
 MonoDomain* mono_jit_init(const char *root_domain_name);
+void mono_jit_cleanup(MonoDomain *domain);
 MonoAssembly* mono_domain_assembly_open(MonoDomain *domain, const char *name);
 MonoImage* mono_assembly_get_image(MonoAssembly *assembly);
 

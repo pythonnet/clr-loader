@@ -11,9 +11,9 @@ _ROOT_DOMAIN = None
 
 
 class Mono:
-    def __init__(self, domain=None):
+    def __init__(self, domain=None, config_file=None):
         self._assemblies = {}
-        initialize()
+        initialize(config_file=config_file)
 
         if domain is None:
             self._domain = _ROOT_DOMAIN
@@ -80,11 +80,18 @@ class MonoMethod:
         return unboxed[0]
 
 
-def initialize(path=None, gc=None):
+def initialize(config_file, path=None, gc=None):
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(path=path, gc=gc)
+        
+        if config_file is None:
+            config_file = ffi.NULL
+        else:
+            config_file = config_file.encode("utf8")
+
         _ROOT_DOMAIN = _MONO.mono_jit_init(b"clr_loader")
+        _MONO.mono_config_parse(config_file)
         _check_result(_ROOT_DOMAIN, "Failed to initialize Mono")
         atexit.register(_release)
 

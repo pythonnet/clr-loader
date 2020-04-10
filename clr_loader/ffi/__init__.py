@@ -42,7 +42,7 @@ def load_mono(path=None, gc=None):
         if path is None:
             raise RuntimeError("Could not find libmono")
 
-    return ffi.dlopen(path)
+    return ffi.dlopen(path, ffi.RTLD_GLOBAL)
 
 
 def load_netfx():

@@ -106,7 +106,8 @@ def _get_handle(dll, dotnet_root, runtime_config):
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     # params.host_path = ffi.new("char_t[]", encode(sys.executable))
     params.host_path = ffi.NULL
-    params.dotnet_root = ffi.new("char_t[]", encode(dotnet_root))
+    dotnet_root_p = ffi.new("char_t[]", encode(dotnet_root))
+    params.dotnet_root = dotnet_root_p
 
     handle_ptr = ffi.new("hostfxr_handle*")
 

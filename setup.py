@@ -79,13 +79,13 @@ setup(
     ext_modules={
         DotnetLib(
             "netfx-loader-x86",
-            "netfx_loader/",
+            "netfx_loader/ClrLoader.csproj",
             runtime="win-x86",
             output="clr_loader/ffi/dlls/x86",
         ),
         DotnetLib(
             "netfx-loader-amd64",
-            "netfx_loader/",
+            "netfx_loader/ClrLoader.csproj",
             runtime="win-x64",
             output="clr_loader/ffi/dlls/amd64",
         ),

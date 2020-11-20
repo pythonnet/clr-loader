@@ -23,7 +23,7 @@ def load_coreclr(runtime):
 
 def load_hostfxr(dotnet_root):
     hostfxr_name = _get_dll_name("hostfxr")
-    hostfxr_path = os.path.join(dotnet_root, "host", "fxr", "3.*", hostfxr_name)
+    hostfxr_path = os.path.join(dotnet_root, "host", "fxr", "?.*", hostfxr_name)
 
     for hostfxr_path in reversed(sorted(glob.glob(hostfxr_path))):
         try:

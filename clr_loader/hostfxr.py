@@ -22,7 +22,11 @@ class HostFxr:
                 raise RuntimeError("Can not determine dotnet root")
 
             try:
-                dotnet_path = os.readlink(dotnet_path)
+                dotnet_tmp_path = os.readlink(dotnet_path)
+                if os.path.isabs(dotnet_tmp_path):
+                    dotnet_path = dotnet_tmp_path
+                else:
+                    dotnet_path = os.path.abspath(os.path.join(os.path.dirname(dotnet_path), dotnet_tmp_path))
             except OSError:
                 pass
 

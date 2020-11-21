@@ -11,9 +11,9 @@ _ROOT_DOMAIN = None
 
 
 class Mono:
-    def __init__(self, domain=None, config_file=None):
+    def __init__(self, domain=None, config_file=None, path=None, gc=None):
         self._assemblies = {}
-        initialize(config_file=config_file)
+        initialize(config_file=config_file, path=path, gc=gc)
 
         if domain is None:
             self._domain = _ROOT_DOMAIN
@@ -84,7 +84,7 @@ def initialize(config_file, path=None, gc=None):
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(path=path, gc=gc)
-        
+
         if config_file is None:
             config_file = ffi.NULL
         else:

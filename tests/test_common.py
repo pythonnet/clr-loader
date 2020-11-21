@@ -1,8 +1,8 @@
 import pytest
 from subprocess import check_call
 import os
-from cffi import FFI
-NULL = FFI().NULL
+import sys
+
 
 @pytest.fixture(scope="session")
 def example_dll(tmpdir_factory):
@@ -14,6 +14,7 @@ def example_dll(tmpdir_factory):
     return out
 
 
+@pytest.mark.xfail
 def test_mono(example_dll):
     from clr_loader import get_mono
 
@@ -28,6 +29,16 @@ def test_coreclr(example_dll):
 
     coreclr = get_coreclr(os.path.join(example_dll, "example.runtimeconfig.json"))
     asm = coreclr.get_assembly(os.path.join(example_dll, "example.dll"))
+
+    run_tests(asm)
+
+
+@pytest.mark.skipif(sys.platform != 'win32', reason=".NET Framework only exists on Windows")
+def test_netfx(example_dll):
+    from clr_loader import get_netfx
+
+    netfx = get_netfx()
+    asm = netfx.get_assembly(os.path.join(example_dll, "example.dll"))
 
     run_tests(asm)
 

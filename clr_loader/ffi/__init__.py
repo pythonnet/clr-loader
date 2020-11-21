@@ -36,7 +36,9 @@ def load_hostfxr(dotnet_root):
 
 def load_mono(path=None, gc=None):
     # Preload C++ standard library, Mono needs that and doesn't properly link against it
-    ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
+    if sys.platform.startswith("linux"):
+        ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
+
     if path is None:
         from ctypes.util import find_library
 

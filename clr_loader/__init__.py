@@ -50,7 +50,7 @@ class Runtime:
         return self.get_assembly(path)
 
 
-def get_mono(domain=None):
+def get_mono(domain=None, config_file=None, path=None, gc=None):
     from .mono import Mono
 
     impl = Mono(domain=domain)

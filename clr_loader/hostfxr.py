@@ -16,6 +16,16 @@ class HostFxr:
         if not dotnet_root:
             dotnet_root = os.environ.get("DOTNET_ROOT", None)
 
+        if not dotnet_root and sys.platform == 'win32':
+            # On Windows, the host library is stored separately from dotnet.exe for x86
+            if sys.maxsize > 2 ** 32:
+                possible_root = os.path.join(os.environ.get("ProgramFiles"), "dotnet")
+            else:
+                possible_root = os.path.join(os.environ.get("ProgramFiles(x86)"), "dotnet")
+
+            if os.path.isdir(possible_root):
+                dotnet_root = possible_root
+
         if not dotnet_root:
             dotnet_path = shutil.which("dotnet")
             if not dotnet_path:

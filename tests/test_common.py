@@ -21,11 +21,24 @@ def build_example(tmpdir_factory, framework):
     return out
 
 
-@pytest.mark.xfail
 def test_mono(example_netstandard):
     from clr_loader import get_mono
 
-    mono = get_mono()
+    if sys.platform == 'win32':
+        if sys.maxsize > 2**32:
+            prog_files = os.environ.get("ProgramFiles")
+        else:
+            prog_files = os.environ.get("ProgramFiles(x86)")
+
+        path = fr"{prog_files}\Mono\bin\mono-2.0-sgen.dll"
+
+    elif sys.platform == "darwin":
+        path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libmono-2.0.dylib"
+
+    else:
+        path = None
+
+    mono = get_mono(path=path)
     asm = mono.get_assembly(os.path.join(example_netstandard, "example.dll"))
 
     run_tests(asm)

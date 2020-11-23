@@ -53,7 +53,7 @@ class Runtime:
 def get_mono(domain=None, config_file=None, path=None, gc=None):
     from .mono import Mono
 
-    impl = Mono(domain=domain)
+    impl = Mono(domain=domain, config_file=config_file, path=path, gc=gc)
     return Runtime(impl)
 
 

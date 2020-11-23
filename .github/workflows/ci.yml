@@ -15,17 +15,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest cffi
+
     - name: Build
       run: |
         pip install -e .
+
+    - name: Cache Mono
+      if: runner.os == 'Windows'
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.TEMP }}\chocolatey
+        key: ${{ runner.os }}-chocolatey
+        restore-keys: |
+          ${{ runner.os }}-chocolatey
+
+    - name: Install Mono
+      if: runner.os == 'Windows'
+      run: |
+        choco install -y mono
+
     - name: Test with pytest
       run: |
         pytest

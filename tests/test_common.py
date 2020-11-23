@@ -21,7 +21,6 @@ def build_example(tmpdir_factory, framework):
     return out
 
 
-@pytest.mark.xfail
 def test_mono(example_netstandard):
     from clr_loader import get_mono
 

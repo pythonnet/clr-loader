@@ -22,7 +22,12 @@ class HostFxr:
                 raise RuntimeError("Can not determine dotnet root")
 
             try:
-                dotnet_tmp_path = os.readlink(dotnet_path)
+                # Pypy does not provide os.readlink right now
+                if hasattr(os, "readlink"):
+                    dotnet_tmp_path = os.readlink(dotnet_path)
+                else:
+                    dotnet_tmp_path = dotnet_path
+
                 if os.path.isabs(dotnet_tmp_path):
                     dotnet_path = dotnet_tmp_path
                 else:

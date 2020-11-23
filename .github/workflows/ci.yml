@@ -26,6 +26,10 @@ jobs:
     - name: Build
       run: |
         pip install -e .
+    - name: Install Mono
+      if: runner.os == 'Windows'
+      run: |
+        choco install -y mono
     - name: Test with pytest
       run: |
         pytest

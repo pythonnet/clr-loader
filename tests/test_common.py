@@ -31,10 +31,10 @@ def test_mono(example_netstandard):
         else:
             prog_files = os.environ.get("ProgramFiles(x86)")
 
-        path = fr"{prog_files}\Mono\bin"
+        path = fr"{prog_files}\Mono\bin\mono-2.0-sgen.dll"
 
     elif sys.platform == "darwin":
-        path = "/Library/Frameworks/Mono.framework/Versions/Current/usr/lib"
+        path = "/Library/Frameworks/Mono.framework/Versions/Current/usr/lib/libmono-2.0.dylib"
 
     else:
         path = None

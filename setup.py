@@ -55,14 +55,14 @@ with open("README.md", "r") as f:
 
 setup(
     name="clr_loader",
-    version="0.1.0",
+    version="0.1.1",
     description="Generic pure Python loader for .NET runtimes",
     author="Benedikt Reinartz",
     author_email="filmor@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
-    python_requires=">=3.3",
+    python_requires=">=3.6",
     install_requires=["cffi>=1.13"],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

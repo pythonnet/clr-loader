@@ -1,7 +1,9 @@
+from typing import Dict, Optional
+
 from .clr_error import ClrError
 
 
-def get_coreclr_error(hresult):
+def get_coreclr_error(hresult: int) -> Optional[ClrError]:
     name = SymbolicName.get(hresult)
     if not name:
         return None
@@ -14,9 +16,9 @@ def get_coreclr_error(hresult):
     )
 
 
-Comment = {}
-SymbolicName = {}
-Message = {}
+Comment: Dict[int, str] = {}
+SymbolicName: Dict[int, str] = {}
+Message: Dict[int, str] = {}
 
 
 if __name__ == "__main__":
@@ -48,8 +50,7 @@ if __name__ == "__main__":
 
     for row in tree.findall(".//HRESULT"):
         try:
-            numeric_value = row.attrib["NumericValue"]
-            numeric_value = int(numeric_value, base=16)
+            numeric_value = int(row.attrib["NumericValue"], base=16)
 
             for child in row:
                 if child.text:

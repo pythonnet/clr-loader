@@ -1,3 +1,5 @@
+# flake8: noqa
+
 cdef = [
     """
 typedef void* pyclr_domain;

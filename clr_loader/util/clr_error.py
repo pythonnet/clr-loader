@@ -1,5 +1,14 @@
+from typing import Optional
+
+
 class ClrError(Exception):
-    def __init__(self, hresult, name=None, message=None, comment=None):
+    def __init__(
+        self,
+        hresult: int,
+        name: Optional[str] = None,
+        message: Optional[str] = None,
+        comment: Optional[str] = None,
+    ):
         self.hresult = hresult
         self.name = name
         self.message = message

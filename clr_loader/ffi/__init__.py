@@ -1,9 +1,9 @@
 import glob
 import os
-import shutil
 import sys
+from typing import Optional
 
-import cffi
+import cffi  # type: ignore
 
 from . import hostfxr, mono, netfx
 
@@ -15,7 +15,7 @@ for cdef in hostfxr.cdef + mono.cdef + netfx.cdef:
     ffi.cdef(cdef)
 
 
-def load_hostfxr(dotnet_root):
+def load_hostfxr(dotnet_root: str):
     hostfxr_name = _get_dll_name("hostfxr")
     hostfxr_path = os.path.join(dotnet_root, "host", "fxr", "?.*", hostfxr_name)
 
@@ -28,7 +28,7 @@ def load_hostfxr(dotnet_root):
     raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}")
 
 
-def load_mono(path=None, gc=None):
+def load_mono(path: Optional[str] = None, gc: Optional[str] = None):
     # Preload C++ standard library, Mono needs that and doesn't properly link against it
     if sys.platform.startswith("linux"):
         ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
@@ -58,7 +58,7 @@ def load_netfx():
     return ffi.dlopen(path)
 
 
-def _get_dll_name(name):
+def _get_dll_name(name: str) -> str:
     if sys.platform == "win32":
         return f"{name}.dll"
     elif sys.platform == "darwin":

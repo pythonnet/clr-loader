@@ -35,14 +35,12 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ env.TEMP }}\chocolatey
-        key: ${{ runner.os }}-chocolatey
-        restore-keys: |
-          ${{ runner.os }}-chocolatey
+        key: ${{ runner.os }}-chocolatey-${{ matrix.python == 'pypy3' && '32' || '64' }}
 
     - name: Install Mono
       if: runner.os == 'Windows'
       run: |
-        choco install -y mono
+        choco install -y mono ${{ matrix.python == 'pypy3' && '--x86' || '' }}
 
     - name: Test with pytest
       run: |

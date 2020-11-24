@@ -5,20 +5,14 @@ import sys
 
 import cffi
 
-from . import coreclr, hostfxr, mono, netfx
+from . import hostfxr, mono, netfx
 
-__all__ = ["ffi", "load_coreclr", "load_hostfxr", "load_mono", "load_netfx"]
+__all__ = ["ffi", "load_hostfxr", "load_mono", "load_netfx"]
 
 ffi = cffi.FFI()
 
-for cdef in coreclr.cdef + hostfxr.cdef + mono.cdef + netfx.cdef:
+for cdef in hostfxr.cdef + mono.cdef + netfx.cdef:
     ffi.cdef(cdef)
-
-
-def load_coreclr(runtime):
-    dll_name = _get_dll_name("coreclr")
-    dll_path = os.path.join(runtime.path, dll_name)
-    return ffi.dlopen(dll_path)
 
 
 def load_hostfxr(dotnet_root):

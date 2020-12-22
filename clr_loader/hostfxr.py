@@ -1,63 +1,69 @@
 import os
-import shutil
 import sys
+from typing import Optional
 
 from .ffi import ffi, load_hostfxr
-from .util import check_result
+from .util import check_result, find_dotnet_root
 
-__all__ = ["HostFxr"]
+__all__ = ["DotnetCoreRuntime"]
 
 
-class HostFxr:
-    # TODO: Allow generating runtime_config
-    def __init__(self, runtime_config, dotnet_root=None):
-        self._handle = None
-
-        if not dotnet_root:
-            dotnet_root = os.environ.get("DOTNET_ROOT", None)
-
-        if not dotnet_root and sys.platform == "win32":
-            # On Windows, the host library is stored separately from dotnet.exe for x86
-            if sys.maxsize > 2 ** 32:
-                possible_root = os.path.join(os.environ.get("ProgramFiles"), "dotnet")
-            else:
-                possible_root = os.path.join(
-                    os.environ.get("ProgramFiles(x86)"), "dotnet"
-                )
-
-            if os.path.isdir(possible_root):
-                dotnet_root = possible_root
-
-        if not dotnet_root:
-            dotnet_path = shutil.which("dotnet")
-            if not dotnet_path:
-                raise RuntimeError("Can not determine dotnet root")
-
-            try:
-                # Pypy does not provide os.readlink right now
-                if hasattr(os, "readlink"):
-                    dotnet_tmp_path = os.readlink(dotnet_path)
-                else:
-                    dotnet_tmp_path = dotnet_path
-
-                if os.path.isabs(dotnet_tmp_path):
-                    dotnet_path = dotnet_tmp_path
-                else:
-                    dotnet_path = os.path.abspath(
-                        os.path.join(os.path.dirname(dotnet_path), dotnet_tmp_path)
-                    )
-            except OSError:
-                pass
-
-            dotnet_root = os.path.dirname(dotnet_path)
-
-        self._dll = load_hostfxr(dotnet_root)
-        self._dotnet_root = dotnet_root
-
+class DotnetCoreRuntime:
+    def __init__(self, runtime_config: str, dotnet_root: Optional[str] = None):
+        self._dotnet_root = dotnet_root or find_dotnet_root()
+        self._dll = load_hostfxr(self._dotnet_root)
+        self._is_finalized = False
         self._handle = _get_handle(self._dll, self._dotnet_root, runtime_config)
         self._load_func = _get_load_func(self._dll, self._handle)
 
+    @property
+    def dotnet_root(self):
+        return self._dotnet_root
+
+    @property
+    def is_finalized(self):
+        return self._is_finalized
+
+    def __getitem__(self, key: str) -> str:
+        buf = ffi.new("char_t**")
+        res = self._dll.hostfxr_get_runtime_property_value(
+            self._handle, encode(key), buf
+        )
+        if res != 0:
+            raise KeyError(key)
+
+        return decode(buf[0])
+
+    def __setitem__(self, key: str, value: str) -> None:
+        if self.is_finalized:
+            raise RuntimeError("Already finalized")
+
+        res = self._dll.hostfxr_set_runtime_property_value(
+            self._handle, encode(key), encode(value)
+        )
+        check_result(res)
+
+    def __iter__(self):
+        max_size = 100
+        size_ptr = ffi.new("size_t*")
+        size_ptr[0] = max_size
+
+        keys_ptr = ffi.new("char_t*[]", max_size)
+        values_ptr = ffi.new("char_t*[]", max_size)
+
+        res = self._fxr._dll.hostfxr_get_runtime_properties(
+            self._fxr._handle, size_ptr, keys_ptr, values_ptr
+        )
+        check_result(res)
+
+        for i in range(size_ptr[0]):
+            yield (decode(keys_ptr[i]), decode(values_ptr[i]))
+
     def get_callable(self, assembly_path, typename, function):
+        # TODO: Maybe use coreclr_get_delegate as well, supported with newer API
+        # versions of hostfxr
+        self._is_finalized = True
+
         # Append assembly name to typename
         assembly_name, _ = os.path.splitext(os.path.basename(assembly_path))
         typename = f"{typename}, {assembly_name}"
@@ -81,47 +87,6 @@ class HostFxr:
 
     def __del__(self):
         self.shutdown()
-
-    @property
-    def props(self):
-        return HostFxrProps(self)
-
-
-class HostFxrProps:
-    def __init__(self, fxr):
-        self._fxr = fxr
-
-    def __getitem__(self, key):
-        buf = ffi.new("char_t**")
-        res = self._fxr._dll.hostfxr_get_runtime_property_value(
-            self._fxr._handle, encode(key), buf
-        )
-        if res != 0:
-            raise KeyError(key)
-
-        return decode(buf[0])
-
-    def __setitem__(self, key, value):
-        res = self._fxr._dll.hostfxr_set_runtime_property_value(
-            self._fxr._handle, encode(key), encode(value)
-        )
-        check_result(res)
-
-    def __iter__(self):
-        max_size = 100
-        size_ptr = ffi.new("size_t*")
-        size_ptr[0] = max_size
-
-        keys_ptr = ffi.new("char_t*[]", max_size)
-        values_ptr = ffi.new("char_t*[]", max_size)
-
-        res = self._fxr._dll.hostfxr_get_runtime_properties(
-            self._fxr._handle, size_ptr, keys_ptr, values_ptr
-        )
-        check_result(res)
-
-        for i in range(size_ptr[0]):
-            yield (decode(keys_ptr[i]), decode(values_ptr[i]))
 
 
 def _get_handle(dll, dotnet_root, runtime_config):

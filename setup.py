@@ -55,7 +55,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="clr_loader",
-    version="0.1.2",
+    version="0.1.3",
     description="Generic pure Python loader for .NET runtimes",
     author="Benedikt Reinartz",
     author_email="filmor@gmail.com",

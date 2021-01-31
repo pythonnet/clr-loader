@@ -59,7 +59,7 @@ def find_libmono(sgen: bool = True) -> str:
         path = (
             "/Library/Frameworks/Mono.framework/Versions/"
             "Current"
-            f"/lib/libmono{unix_name}.dylib"
+            f"/lib/lib{unix_name}.dylib"
         )
 
     else:

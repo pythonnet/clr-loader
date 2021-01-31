@@ -33,13 +33,6 @@ def load_mono(path: Optional[str] = None, gc: Optional[str] = None):
     if sys.platform.startswith("linux"):
         ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
 
-    if path is None:
-        from ctypes.util import find_library
-
-        path = find_library(f"mono{gc or ''}-2.0")
-        if path is None:
-            raise RuntimeError("Could not find libmono")
-
     return ffi.dlopen(path, ffi.RTLD_GLOBAL)
 
 

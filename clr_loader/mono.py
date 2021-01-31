@@ -11,9 +11,10 @@ _ROOT_DOMAIN = None
 
 
 class Mono:
-    def __init__(self, domain=None, config_file=None, path=None, gc=None):
+    def __init__(self, libmono, domain=None, config_file=None):
         self._assemblies = {}
-        initialize(config_file=config_file, path=path, gc=gc)
+
+        initialize(config_file=config_file, libmono=libmono)
 
         if domain is None:
             self._domain = _ROOT_DOMAIN
@@ -80,10 +81,10 @@ class MonoMethod:
         return unboxed[0]
 
 
-def initialize(config_file, path=None, gc=None):
+def initialize(config_file: str, libmono: str) -> None:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
-        _MONO = load_mono(path=path, gc=gc)
+        _MONO = load_mono(libmono)
 
         if config_file is None:
             config_file = ffi.NULL

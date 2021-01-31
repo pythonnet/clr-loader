@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Optional
 
 from .ffi import ffi, load_hostfxr
 from .util import check_result, find_dotnet_root
@@ -9,7 +8,7 @@ __all__ = ["DotnetCoreRuntime"]
 
 
 class DotnetCoreRuntime:
-    def __init__(self, runtime_config: str, dotnet_root: Optional[str] = None):
+    def __init__(self, runtime_config: str, dotnet_root: str):
         self._dotnet_root = dotnet_root or find_dotnet_root()
         self._dll = load_hostfxr(self._dotnet_root)
         self._is_finalized = False

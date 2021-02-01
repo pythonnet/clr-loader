@@ -84,10 +84,14 @@ namespace ClrLoader
             }
         }
 
+        #if DEBUG
         static void Print(string s)
         {
             Console.WriteLine(s);
         }
+        #else
+        static void Print(string s) {}
+        #endif
     }
 
 }

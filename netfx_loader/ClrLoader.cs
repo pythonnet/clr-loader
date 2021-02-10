@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
-using System.Globalization;
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using NXPorts.Attributes;
 
@@ -10,7 +8,18 @@ namespace ClrLoader
 {
     public static class ClrLoader
     {
-        delegate int EntryPoint(IntPtr buffer, int size);
+        static bool _initialized = false;
+        static List<DomainData> _domains = new List<DomainData>();
+
+        [DllExport("pyclr_initialize", CallingConvention.Cdecl)]
+        public static void Initialize()
+        {
+            if (!_initialized)
+            {
+                _domains.Add(new DomainData(AppDomain.CurrentDomain));
+                _initialized = true;
+            }
+        }
 
         [DllExport("pyclr_create_appdomain", CallingConvention.Cdecl)]
         public static IntPtr CreateAppDomain(
@@ -29,11 +38,9 @@ namespace ClrLoader
 
                 Print($"Located domain {domain}");
 
-                var handle = GCHandle.Alloc(domain, GCHandleType.Pinned);
-
-                Print($"Created handle {handle}");
-
-                return handle.AddrOfPinnedObject();
+                var domainData = new DomainData(domain);
+                _domains.Add(domainData);
+                return new IntPtr(_domains.Count - 1);
             }
             else
             {
@@ -51,18 +58,8 @@ namespace ClrLoader
         {
             try
             {
-                var domainObj = AppDomain.CurrentDomain;
-                if (domain != IntPtr.Zero)
-                {
-                    var handle = GCHandle.FromIntPtr(domain);
-                    domainObj = (AppDomain)handle.Target;
-                }
-
-                var assembly = domainObj.Load(AssemblyName.GetAssemblyName(assemblyPath));
-                var type = assembly.GetType(typeName, throwOnError: true);
-                Print($"Loaded type {type}");
-                var deleg = Delegate.CreateDelegate(typeof(EntryPoint), type, function);
-
+                var domainData = _domains[(int)domain];
+                var deleg = domainData.GetEntryPoint(assemblyPath, typeName, function);
                 return Marshal.GetFunctionPointerForDelegate(deleg);
             }
             catch (Exception exc)
@@ -77,21 +74,38 @@ namespace ClrLoader
         {
             if (domain != IntPtr.Zero)
             {
-                var handle = GCHandle.FromIntPtr(domain);
-                var domainObj = (AppDomain)handle.Target;
-                AppDomain.Unload(domainObj);
-                handle.Free();
+                try
+                {
+                    var domainData = _domains[(int)domain];
+                    domainData.Dispose();
+                }
+                catch (Exception exc)
+                {
+                    Print($"Exception in {nameof(CloseAppDomain)}: {exc.GetType().Name} {exc.Message}\n{exc.StackTrace}");
+                }
             }
         }
 
-        #if DEBUG
-        static void Print(string s)
+        [DllExport("pyclr_finalize", CallingConvention.Cdecl)]
+        public static void Close()
+        {
+            foreach (var domainData in _domains)
+            {
+                domainData.Dispose();
+            }
+
+            _domains.Clear();
+            _initialized = false;
+        }
+
+#if DEBUG
+        internal static void Print(string s)
         {
             Console.WriteLine(s);
         }
-        #else
-        static void Print(string s) {}
-        #endif
+#else
+        internal static void Print(string s) { }
+#endif
     }
 
 }

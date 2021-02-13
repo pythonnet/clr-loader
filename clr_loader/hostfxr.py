@@ -16,11 +16,11 @@ class DotnetCoreRuntime:
         self._load_func = _get_load_func(self._dll, self._handle)
 
     @property
-    def dotnet_root(self):
+    def dotnet_root(self) -> str:
         return self._dotnet_root
 
     @property
-    def is_finalized(self):
+    def is_finalized(self) -> bool:
         return self._is_finalized
 
     def __getitem__(self, key: str) -> str:
@@ -58,7 +58,7 @@ class DotnetCoreRuntime:
         for i in range(size_ptr[0]):
             yield (decode(keys_ptr[i]), decode(values_ptr[i]))
 
-    def get_callable(self, assembly_path, typename, function):
+    def get_callable(self, assembly_path: str, typename: str, function: str):
         # TODO: Maybe use coreclr_get_delegate as well, supported with newer API
         # versions of hostfxr
         self._is_finalized = True
@@ -79,7 +79,7 @@ class DotnetCoreRuntime:
         check_result(res)
         return ffi.cast("component_entry_point_fn", delegate_ptr[0])
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         if self._handle is not None:
             self._dll.hostfxr_close(self._handle)
             self._handle = None
@@ -88,7 +88,7 @@ class DotnetCoreRuntime:
         self.shutdown()
 
 
-def _get_handle(dll, dotnet_root, runtime_config):
+def _get_handle(dll, dotnet_root: str, runtime_config: str):
     params = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     # params.host_path = ffi.new("char_t[]", encode(sys.executable))

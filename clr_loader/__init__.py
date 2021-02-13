@@ -33,7 +33,7 @@ def get_coreclr(
 
     impl = DotnetCoreRuntime(runtime_config=runtime_config, dotnet_root=dotnet_root)
     if properties:
-        for key, value in properties:
+        for key, value in properties.items():
             impl[key] = value
 
     return Runtime(impl)

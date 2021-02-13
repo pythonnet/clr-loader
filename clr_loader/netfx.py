@@ -1,17 +1,18 @@
 import atexit
+from typing import Optional, Any
 from .ffi import ffi, load_netfx
 
-_FW = None
+_FW: Optional[Any] = None
 
 
 class NetFx:
-    def __init__(self, name=None, config_file=None):
+    def __init__(self, name: Optional[str] = None, config_file: Optional[str] = None):
         initialize()
         self._domain = _FW.pyclr_create_appdomain(
             name or ffi.NULL, config_file or ffi.NULL
         )
 
-    def get_callable(self, assembly_path, typename, function):
+    def get_callable(self, assembly_path: str, typename: str, function: str):
         func = _FW.pyclr_get_function(
             self._domain,
             assembly_path.encode("utf8"),

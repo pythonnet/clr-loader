@@ -87,12 +87,12 @@ def initialize(config_file: str, libmono: str) -> None:
         _MONO = load_mono(libmono)
 
         if config_file is None:
-            config_file = ffi.NULL
+            config_bytes = ffi.NULL
         else:
-            config_file = config_file.encode("utf8")
+            config_bytes = config_file.encode("utf8")
 
         _ROOT_DOMAIN = _MONO.mono_jit_init(b"clr_loader")
-        _MONO.mono_config_parse(config_file)
+        _MONO.mono_config_parse(config_bytes)
         _check_result(_ROOT_DOMAIN, "Failed to initialize Mono")
         atexit.register(_release)
 

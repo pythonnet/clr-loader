@@ -50,8 +50,8 @@ class DotnetCoreRuntime:
         keys_ptr = ffi.new("char_t*[]", max_size)
         values_ptr = ffi.new("char_t*[]", max_size)
 
-        res = self._fxr._dll.hostfxr_get_runtime_properties(
-            self._fxr._handle, size_ptr, keys_ptr, values_ptr
+        res = self._dll.hostfxr_get_runtime_properties(
+            self._dll._handle, size_ptr, keys_ptr, values_ptr
         )
         check_result(res)
 

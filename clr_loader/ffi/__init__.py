@@ -28,7 +28,7 @@ def load_hostfxr(dotnet_root: str):
     raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}")
 
 
-def load_mono(path: Optional[str] = None, gc: Optional[str] = None):
+def load_mono(path: Optional[str] = None):
     # Preload C++ standard library, Mono needs that and doesn't properly link against it
     if sys.platform.startswith("linux"):
         ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)

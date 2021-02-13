@@ -1,6 +1,6 @@
+from os.path import basename
 from typing import Any, Optional
 from .ffi import ffi
-from os.path import basename
 
 RuntimeImpl = Any
 

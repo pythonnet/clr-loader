@@ -13,6 +13,7 @@ class ClrError(Exception):
         self.name = name
         self.message = message
         self.comment = comment
+        super().__init__(self.message)
 
     def __str__(self):
         if self.message:

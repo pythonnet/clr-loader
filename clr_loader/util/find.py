@@ -69,5 +69,5 @@ def find_libmono(sgen: bool = True) -> str:
 
     if path is None:
         raise RuntimeError("Could not find libmono")
-    
+
     return path

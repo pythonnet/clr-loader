@@ -39,7 +39,7 @@ class Mono:
             method, f"Could not find method {typename}.{function} in assembly"
         )
 
-        return MonoMethod(self._domain, method)
+        return MonoMethod(method)
 
 
 class MethodDesc:
@@ -58,7 +58,7 @@ class MethodDesc:
 
 
 class MonoMethod:
-    def __init__(self, domain, ptr):
+    def __init__(self, ptr):
         self._ptr = ptr
 
     def __call__(self, ptr, size):

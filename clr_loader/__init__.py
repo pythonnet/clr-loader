@@ -9,6 +9,7 @@ __all__ = ["get_mono", "get_netfx", "get_coreclr"]
 def get_mono(
     domain: Optional[str] = None,
     config_file: Optional[str] = None,
+    global_config_file: Optional[str] = None,
     libmono: Optional[str] = None,
     sgen: bool = True,
 ) -> Runtime:
@@ -17,7 +18,12 @@ def get_mono(
     if libmono is None:
         libmono = find_libmono(sgen)
 
-    impl = Mono(domain=domain, config_file=config_file, libmono=libmono)
+    impl = Mono(
+        domain=domain,
+        config_file=config_file,
+        global_config_file=global_config_file,
+        libmono=libmono,
+    )
     return Runtime(impl)
 
 

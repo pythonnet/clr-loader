@@ -104,7 +104,7 @@ def initialize(
 
         # Load in global config (i.e /etc/mono/config)
         global_encoded = global_config_file or ffi.NULL
-        _MONO.mono_config_parse(global_config_file)
+        _MONO.mono_config_parse(global_encoded)
 
         # Even if we don't have a domain config file, we still need to set it
         # as something, see https://github.com/pythonnet/clr-loader/issues/8

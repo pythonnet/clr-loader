@@ -1,4 +1,5 @@
 import atexit
+from typing import Optional
 
 from .ffi import load_mono, ffi
 
@@ -11,10 +12,21 @@ _ROOT_DOMAIN = None
 
 
 class Mono:
-    def __init__(self, libmono, domain=None, config_file=None):
+    def __init__(
+        self,
+        libmono,
+        *,
+        domain=None,
+        config_file: Optional[str] = None,
+        global_config_file: Optional[str] = None,
+    ):
         self._assemblies = {}
 
-        initialize(config_file=config_file, libmono=libmono)
+        initialize(
+            config_file=config_file,
+            global_config_file=global_config_file,
+            libmono=libmono,
+        )
 
         if domain is None:
             self._domain = _ROOT_DOMAIN
@@ -81,18 +93,28 @@ class MonoMethod:
         return unboxed[0]
 
 
-def initialize(config_file: str, libmono: str) -> None:
+def initialize(
+    libmono: str,
+    config_file: Optional[str] = None,
+    global_config_file: Optional[str] = None,
+) -> None:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(libmono)
 
+        # Load in global config (i.e /etc/mono/config)
+        global_encoded = global_config_file or ffi.NULL
+        _MONO.mono_config_parse(global_encoded)
+
+        # Even if we don't have a domain config file, we still need to set it
+        # as something, see https://github.com/pythonnet/clr-loader/issues/8
         if config_file is None:
-            config_bytes = ffi.NULL
-        else:
-            config_bytes = config_file.encode("utf8")
+            config_file = ""
+
+        config_encoded = config_file.encode("utf8")
 
         _ROOT_DOMAIN = _MONO.mono_jit_init(b"clr_loader")
-        _MONO.mono_config_parse(config_bytes)
+        _MONO.mono_domain_set_config(_ROOT_DOMAIN, b".", config_encoded)
         _check_result(_ROOT_DOMAIN, "Failed to initialize Mono")
         atexit.register(_release)
 

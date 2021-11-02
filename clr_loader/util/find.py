@@ -11,11 +11,7 @@ def find_dotnet_root() -> str:
 
     if sys.platform == "win32":
         # On Windows, the host library is stored separately from dotnet.exe for x86
-        if sys.maxsize > 2 ** 32:
-            prog_files = os.environ.get("ProgramFiles")
-        else:
-            prog_files = os.environ.get("ProgramFiles(x86)")
-
+        prog_files = os.environ.get("ProgramFiles")
         dotnet_root = os.path.join(prog_files, "dotnet")
         if os.path.isdir(dotnet_root):
             return dotnet_root

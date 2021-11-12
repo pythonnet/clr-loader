@@ -11,8 +11,19 @@ typedef struct _MonoMethodDesc MonoMethodDesc;
 typedef struct _MonoMethod MonoMethod;
 typedef struct _MonoObject MonoObject;
 
+typedef enum {
+	MONO_DEBUG_FORMAT_NONE,
+	MONO_DEBUG_FORMAT_MONO,
+	/* Deprecated, the mdb debugger is not longer supported. */
+	MONO_DEBUG_FORMAT_DEBUGGER
+} MonoDebugFormat;
+
 MonoDomain* mono_jit_init(const char *root_domain_name);
 void mono_jit_cleanup(MonoDomain *domain);
+void mono_jit_parse_options(int argc, char * argv[]);
+
+void mono_debug_init (MonoDebugFormat format);
+
 MonoAssembly* mono_domain_assembly_open(MonoDomain *domain, const char *name);
 MonoImage* mono_assembly_get_image(MonoAssembly *assembly);
 

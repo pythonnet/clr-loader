@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Sequence
 
 from .wrappers import Runtime
 from .util.find import find_libmono, find_dotnet_root
@@ -12,6 +12,8 @@ def get_mono(
     global_config_file: Optional[str] = None,
     libmono: Optional[str] = None,
     sgen: bool = True,
+    debug: bool = False,
+    jit_options: Optional[Sequence[str]] = None,
 ) -> Runtime:
     from .mono import Mono
 
@@ -20,6 +22,8 @@ def get_mono(
 
     impl = Mono(
         domain=domain,
+        debug=debug,
+        jit_options=jit_options,
         config_file=config_file,
         global_config_file=global_config_file,
         libmono=libmono,

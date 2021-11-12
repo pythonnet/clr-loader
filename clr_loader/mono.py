@@ -1,5 +1,5 @@
 import atexit
-from typing import Optional
+from typing import Optional, Sequence
 
 from .ffi import load_mono, ffi
 
@@ -17,6 +17,8 @@ class Mono:
         libmono,
         *,
         domain=None,
+        debug=False,
+        jit_options: Optional[Sequence[str]] = None,
         config_file: Optional[str] = None,
         global_config_file: Optional[str] = None,
     ):
@@ -24,6 +26,8 @@ class Mono:
 
         initialize(
             config_file=config_file,
+            debug=debug,
+            jit_options=jit_options,
             global_config_file=global_config_file,
             libmono=libmono,
         )
@@ -95,6 +99,8 @@ class MonoMethod:
 
 def initialize(
     libmono: str,
+    debug: bool = False,
+    jit_options: Optional[Sequence[str]] = None,
     config_file: Optional[str] = None,
     global_config_file: Optional[str] = None,
 ) -> None:
@@ -112,6 +118,13 @@ def initialize(
             config_file = ""
 
         config_encoded = config_file.encode("utf8")
+
+        if jit_options:
+            options = [ffi.new("char[]", o.encode("utf8")) for o in jit_options]
+            _MONO.mono_jit_parse_options(len(options), options)
+
+        if debug:
+            _MONO.mono_debug_init(_MONO.MONO_DEBUG_FORMAT_MONO)
 
         _ROOT_DOMAIN = _MONO.mono_jit_init(b"clr_loader")
         _MONO.mono_domain_set_config(_ROOT_DOMAIN, b".", config_encoded)

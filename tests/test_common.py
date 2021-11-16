@@ -32,6 +32,20 @@ def test_mono(example_netstandard):
     run_tests(asm)
 
 
+def test_mono_debug(example_netstandard):
+    from clr_loader import get_mono
+
+    mono = get_mono(
+        debug=True,
+        jit_options=[
+            "--debugger-agent=address=0.0.0.0:5831,transport=dt_socket,server=y"
+        ],
+    )
+    asm = mono.get_assembly(os.path.join(example_netstandard, "example.dll"))
+
+    run_tests(asm)
+
+
 def test_coreclr(example_netcore):
     from clr_loader import get_coreclr
 

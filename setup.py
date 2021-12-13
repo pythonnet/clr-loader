@@ -15,7 +15,7 @@ class BuildDotnet(Command):
     """Build command for dotnet-cli based builds"""
 
     description = "Build DLLs with dotnet-cli"
-    user_options = [("dotnet-config", None, "dotnet build configuration")]
+    user_options = [("dotnet-config=", None, "dotnet build configuration")]
 
     def initialize_options(self):
         self.dotnet_config = "release"

@@ -18,6 +18,8 @@ typedef enum {
 	MONO_DEBUG_FORMAT_DEBUGGER
 } MonoDebugFormat;
 
+char* mono_get_runtime_build_info (void);
+
 MonoDomain* mono_jit_init(const char *root_domain_name);
 void mono_jit_cleanup(MonoDomain *domain);
 void mono_jit_parse_options(int argc, char * argv[]);

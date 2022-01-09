@@ -1,4 +1,5 @@
 import atexit
+import re
 from typing import Optional, Sequence
 
 from .ffi import load_mono, ffi
@@ -122,6 +123,8 @@ def initialize(
         if jit_options:
             options = [ffi.new("char[]", o.encode("utf8")) for o in jit_options]
             _MONO.mono_jit_parse_options(len(options), options)
+        else:
+            options = []
 
         if debug:
             _MONO.mono_debug_init(_MONO.MONO_DEBUG_FORMAT_MONO)
@@ -129,6 +132,20 @@ def initialize(
         _ROOT_DOMAIN = _MONO.mono_jit_init(b"clr_loader")
         _MONO.mono_domain_set_config(_ROOT_DOMAIN, b".", config_encoded)
         _check_result(_ROOT_DOMAIN, "Failed to initialize Mono")
+
+        build = _MONO.mono_get_runtime_build_info()
+        _check_result(build, "Failed to get Mono version")
+        ver_str = ffi.string(build).decode('utf8') # e.g. '6.12.0.122 (tarball)'
+
+        ver = re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+', ver_str)
+        if ver is not None:
+            major = int(ver.group('major'))
+            minor = int(ver.group('minor'))
+
+            if major < 6 or (major == 6 and minor < 12):
+                import warnings
+                warnings.warn('Hosting Mono versions before v6.12 is known to be problematic. If the process crashes shortly after you see this message, try updating Mono to at least v6.12.')
+
         atexit.register(_release)
 
 

@@ -1,0 +1,42 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: ARM64 Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux, ARM64]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: |
+          3.1.x
+          6.0.x
+
+    - name: Create virtualenv
+      run: |
+        virtualenv -p python3 venv
+
+    - name: Install dependencies
+      run: |
+        source venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install pytest cffi
+
+    # Assumes recent Mono
+
+    - name: Build
+      run: |
+        source venv/bin/activate
+        pip install -e .
+
+    - name: Test with pytest
+      run: |
+        source venv/bin/activate
+        pytest

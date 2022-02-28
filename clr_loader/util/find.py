@@ -16,7 +16,7 @@ def find_dotnet_root() -> str:
     elif sys.platform == "darwin":
         dotnet_root = "/usr/local/share/dotnet"
 
-    if os.path.isdir(dotnet_root):
+    if dotnet_root is not None and os.path.isdir(dotnet_root):
         return dotnet_root
 
     # Try to discover dotnet from PATH otherwise

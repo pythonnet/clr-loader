@@ -13,8 +13,11 @@ def find_dotnet_root() -> str:
         # On Windows, the host library is stored separately from dotnet.exe for x86
         prog_files = os.environ.get("ProgramFiles")
         dotnet_root = os.path.join(prog_files, "dotnet")
-        if os.path.isdir(dotnet_root):
-            return dotnet_root
+    elif sys.platform == "darwin":
+        dotnet_root = "/usr/local/share/dotnet"
+
+    if dotnet_root is not None and os.path.isdir(dotnet_root):
+        return dotnet_root
 
     # Try to discover dotnet from PATH otherwise
     dotnet_path = shutil.which("dotnet")

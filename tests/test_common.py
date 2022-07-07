@@ -11,7 +11,7 @@ def example_netstandard(tmpdir_factory):
 
 @pytest.fixture(scope="session")
 def example_netcore(tmpdir_factory):
-    return build_example(tmpdir_factory, "netcoreapp31")
+    return build_example(tmpdir_factory, "net60")
 
 
 def build_example(tmpdir_factory, framework):

@@ -1,6 +1,6 @@
 import atexit
 import re
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Dict, Any
 
 from .ffi import load_mono, ffi
 
@@ -23,7 +23,7 @@ class Mono:
         config_file: Optional[str] = None,
         global_config_file: Optional[str] = None,
     ):
-        self._assemblies = {}
+        self._assemblies: Dict[str, Any] = {}
 
         initialize(
             config_file=config_file,
@@ -135,16 +135,21 @@ def initialize(
 
         build = _MONO.mono_get_runtime_build_info()
         _check_result(build, "Failed to get Mono version")
-        ver_str = ffi.string(build).decode('utf8') # e.g. '6.12.0.122 (tarball)'
+        ver_str = ffi.string(build).decode("utf8")  # e.g. '6.12.0.122 (tarball)'
 
-        ver = re.match(r'^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+', ver_str)
+        ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
         if ver is not None:
-            major = int(ver.group('major'))
-            minor = int(ver.group('minor'))
+            major = int(ver.group("major"))
+            minor = int(ver.group("minor"))
 
             if major < 6 or (major == 6 and minor < 12):
                 import warnings
-                warnings.warn('Hosting Mono versions before v6.12 is known to be problematic. If the process crashes shortly after you see this message, try updating Mono to at least v6.12.')
+
+                warnings.warn(
+                    "Hosting Mono versions before v6.12 is known to be problematic. "
+                    "If the process crashes shortly after you see this message, try "
+                    "updating Mono to at least v6.12."
+                )
 
         atexit.register(_release)
 

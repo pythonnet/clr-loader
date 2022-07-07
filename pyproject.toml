@@ -1,3 +1,43 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "clr_loader"
+description = "Generic pure Python loader for .NET runtimes"
+license = {text = "MIT"}
+version = "0.1.7"
+
+readme = "README.md"
+
+dependencies = ["cffi>=1.13"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+]
+
+[[project.authors]]
+name = "Benedikt Reinartz"
+email = "filmor@gmail.com"
+
+[project.urls]
+Sources = "https://github.com/pythonnet/clr-loader"
+
+[tool.setuptools]
+zip-safe = false
+package-data = {"clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"]}
+
+[tool.setuptools.packages.find]
+include = ["clr_loader*"]
+
+[tool.pytest.ini_options]
+xfail_strict = true
+testpaths = [
+    "tests"
+]

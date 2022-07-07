@@ -41,7 +41,7 @@ def load_netfx():
         raise RuntimeError(".NET Framework is only supported on Windows")
 
     dirname = os.path.join(os.path.dirname(__file__), "dlls")
-    if sys.maxsize > 2 ** 32:
+    if sys.maxsize > 2**32:
         arch = "amd64"
     else:
         arch = "x86"

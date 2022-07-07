@@ -46,13 +46,13 @@ def find_dotnet_root() -> str:
 def find_libmono(sgen: bool = True) -> str:
     unix_name = f"mono{'sgen' if sgen else ''}-2.0"
     if sys.platform == "win32":
-        if sys.maxsize > 2 ** 32:
+        if sys.maxsize > 2**32:
             prog_files = os.environ.get("ProgramFiles")
         else:
             prog_files = os.environ.get("ProgramFiles(x86)")
 
         # Ignore sgen on Windows, the main installation only contains this DLL
-        path = fr"{prog_files}\Mono\bin\mono-2.0-sgen.dll"
+        path = rf"{prog_files}\Mono\bin\mono-2.0-sgen.dll"
 
     elif sys.platform == "darwin":
         path = (

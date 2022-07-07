@@ -125,7 +125,6 @@ if sys.platform == "win32":
     def decode(char_ptr):
         return ffi.string(char_ptr)
 
-
 else:
 
     def encode(string):

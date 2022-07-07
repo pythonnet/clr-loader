@@ -2,7 +2,7 @@ import atexit
 from typing import Optional, Any
 from .ffi import ffi, load_netfx
 
-_FW: Optional[Any] = None
+_FW: Any = None
 
 
 class NetFx:

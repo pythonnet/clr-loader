@@ -1,37 +1,40 @@
 import atexit
 import re
-from typing import Optional, Sequence, Dict, Any
+from pathlib import Path
+from typing import Any, Dict, Optional, Sequence
 
-from .ffi import load_mono, ffi
-
+from .ffi import ffi, load_mono
+from .types import Runtime, RuntimeInfo
+from .util import optional_path_as_string, path_as_string
 
 __all__ = ["Mono"]
 
 
-_MONO = None
-_ROOT_DOMAIN = None
+_MONO: Any = None
+_ROOT_DOMAIN: Any = None
 
 
-class Mono:
+class Mono(Runtime):
     def __init__(
         self,
-        libmono,
+        libmono: Optional[Path],
         *,
-        domain=None,
-        debug=False,
+        domain: Optional[str] = None,
+        debug: bool = False,
         jit_options: Optional[Sequence[str]] = None,
-        config_file: Optional[str] = None,
-        global_config_file: Optional[str] = None,
+        config_file: Optional[Path] = None,
+        global_config_file: Optional[Path] = None,
     ):
-        self._assemblies: Dict[str, Any] = {}
+        self._assemblies: Dict[Path, Any] = {}
 
-        initialize(
-            config_file=config_file,
+        self._version = initialize(
+            config_file=optional_path_as_string(config_file),
             debug=debug,
             jit_options=jit_options,
-            global_config_file=global_config_file,
+            global_config_file=optional_path_as_string(global_config_file),
             libmono=libmono,
         )
+        print(self._version)
 
         if domain is None:
             self._domain = _ROOT_DOMAIN
@@ -39,10 +42,11 @@ class Mono:
             raise NotImplementedError
 
     def get_callable(self, assembly_path, typename, function):
+        assembly_path = Path(assembly_path)
         assembly = self._assemblies.get(assembly_path)
         if not assembly:
             assembly = _MONO.mono_domain_assembly_open(
-                self._domain, assembly_path.encode("utf8")
+                self._domain, path_as_string(assembly_path).encode("utf8")
             )
             _check_result(assembly, f"Unable to load assembly {assembly_path}")
             self._assemblies[assembly_path] = assembly
@@ -57,6 +61,20 @@ class Mono:
         )
 
         return MonoMethod(method)
+
+    def info(self) -> RuntimeInfo:
+        return RuntimeInfo(
+            kind="Mono",
+            version=self._version,
+            initialized=True,
+            shutdown=_MONO is None,
+            properties={},
+        )
+
+    def shutdown(self) -> None:
+        # We don't implement non-root-domains, yet. When we do, it needs to be
+        # released here.
+        pass
 
 
 class MethodDesc:
@@ -99,12 +117,12 @@ class MonoMethod:
 
 
 def initialize(
-    libmono: str,
+    libmono: Optional[Path],
     debug: bool = False,
     jit_options: Optional[Sequence[str]] = None,
     config_file: Optional[str] = None,
     global_config_file: Optional[str] = None,
-) -> None:
+) -> str:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(libmono)
@@ -133,28 +151,29 @@ def initialize(
         _MONO.mono_domain_set_config(_ROOT_DOMAIN, b".", config_encoded)
         _check_result(_ROOT_DOMAIN, "Failed to initialize Mono")
 
-        build = _MONO.mono_get_runtime_build_info()
-        _check_result(build, "Failed to get Mono version")
-        ver_str = ffi.string(build).decode("utf8")  # e.g. '6.12.0.122 (tarball)'
+    build = _MONO.mono_get_runtime_build_info()
+    _check_result(build, "Failed to get Mono version")
+    ver_str = ffi.string(build).decode("utf8")  # e.g. '6.12.0.122 (tarball)'
 
-        ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
-        if ver is not None:
-            major = int(ver.group("major"))
-            minor = int(ver.group("minor"))
+    ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
+    if ver is not None:
+        major = int(ver.group("major"))
+        minor = int(ver.group("minor"))
 
-            if major < 6 or (major == 6 and minor < 12):
-                import warnings
+        if major < 6 or (major == 6 and minor < 12):
+            import warnings
 
-                warnings.warn(
-                    "Hosting Mono versions before v6.12 is known to be problematic. "
-                    "If the process crashes shortly after you see this message, try "
-                    "updating Mono to at least v6.12."
-                )
+            warnings.warn(
+                "Hosting Mono versions before v6.12 is known to be problematic. "
+                "If the process crashes shortly after you see this message, try "
+                "updating Mono to at least v6.12."
+            )
 
-        atexit.register(_release)
+    atexit.register(_release)
+    return ver_str
 
 
-def _release():
+def _release() -> None:
     global _MONO, _ROOT_DOMAIN
     if _ROOT_DOMAIN is not None and _MONO is not None:
         _MONO.mono_jit_cleanup(_ROOT_DOMAIN)
@@ -162,6 +181,6 @@ def _release():
         _ROOT_DOMAIN = None
 
 
-def _check_result(res, msg):
+def _check_result(res: Any, msg: str) -> None:
     if res == ffi.NULL or not res:
         raise RuntimeError(msg)

@@ -1,28 +1,45 @@
 import atexit
-from typing import Optional, Any
+from pathlib import Path
+from typing import Any, Optional
+
 from .ffi import ffi, load_netfx
+from .types import Runtime, RuntimeInfo, StrOrPath
 
 _FW: Any = None
 
 
-class NetFx:
-    def __init__(self, name: Optional[str] = None, config_file: Optional[str] = None):
+class NetFx(Runtime):
+    def __init__(self, name: Optional[str] = None, config_file: Optional[Path] = None):
         initialize()
-        self._domain = _FW.pyclr_create_appdomain(
-            name or ffi.NULL, config_file or ffi.NULL
+        if config_file is not None:
+            config_file_s = str(config_file)
+        else:
+            config_file_s = ffi.NULL
+
+        self._name = name
+        self._config_file = config_file
+        self._domain = _FW.pyclr_create_appdomain(name or ffi.NULL, config_file_s)
+
+    def info(self) -> RuntimeInfo:
+        return RuntimeInfo(
+            kind=".NET Framework",
+            version="<undefined>",
+            initialized=True,
+            shutdown=_FW is None,
+            properties={},
         )
 
-    def get_callable(self, assembly_path: str, typename: str, function: str):
+    def get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
         func = _FW.pyclr_get_function(
             self._domain,
-            assembly_path.encode("utf8"),
+            str(Path(assembly_path)).encode("utf8"),
             typename.encode("utf8"),
             function.encode("utf8"),
         )
 
         return func
 
-    def __del__(self):
+    def shutdown(self):
         if self._domain and _FW:
             _FW.pyclr_close_appdomain(self._domain)
 

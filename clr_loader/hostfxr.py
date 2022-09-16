@@ -79,7 +79,7 @@ class DotnetCoreRuntime(Runtime):
         for i in range(size_ptr[0]):
             yield (decode(keys_ptr[i]), decode(values_ptr[i]))
 
-    def get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
+    def _get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
         # TODO: Maybe use coreclr_get_delegate as well, supported with newer API
         # versions of hostfxr
         self._is_initialized = True

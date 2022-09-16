@@ -6,6 +6,8 @@ from typing import Any, Dict, TextIO
 
 @dataclass
 class DotnetCoreRuntimeSpec:
+    """Specification of an installed .NET Core runtime"""
+
     name: str
     version: str
     path: Path

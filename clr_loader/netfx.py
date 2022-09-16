@@ -9,16 +9,18 @@ _FW: Any = None
 
 
 class NetFx(Runtime):
-    def __init__(self, name: Optional[str] = None, config_file: Optional[Path] = None):
+    def __init__(
+        self, domain: Optional[str] = None, config_file: Optional[Path] = None
+    ):
         initialize()
         if config_file is not None:
             config_file_s = str(config_file)
         else:
             config_file_s = ffi.NULL
 
-        self._name = name
+        self._domain = domain
         self._config_file = config_file
-        self._domain = _FW.pyclr_create_appdomain(name or ffi.NULL, config_file_s)
+        self._domain = _FW.pyclr_create_appdomain(domain or ffi.NULL, config_file_s)
 
     def info(self) -> RuntimeInfo:
         return RuntimeInfo(
@@ -26,10 +28,12 @@ class NetFx(Runtime):
             version="<undefined>",
             initialized=True,
             shutdown=_FW is None,
-            properties={},
+            properties=dict(
+                domain=self._domain or "", config_file=str(self._config_file)
+            ),
         )
 
-    def get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
+    def _get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
         func = _FW.pyclr_get_function(
             self._domain,
             str(Path(assembly_path)).encode("utf8"),

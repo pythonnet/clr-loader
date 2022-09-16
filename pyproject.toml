@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "clr_loader"
 description = "Generic pure Python loader for .NET runtimes"
 license = {text = "MIT"}
-version = "0.1.7"
+version = "0.2.0"
 
 readme = "README.md"
 

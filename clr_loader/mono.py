@@ -41,7 +41,7 @@ class Mono(Runtime):
         else:
             raise NotImplementedError
 
-    def get_callable(self, assembly_path, typename, function):
+    def _get_callable(self, assembly_path, typename, function):
         assembly_path = Path(assembly_path)
         assembly = self._assemblies.get(assembly_path)
         if not assembly:

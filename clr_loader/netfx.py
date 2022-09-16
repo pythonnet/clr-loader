@@ -18,7 +18,7 @@ class NetFx(Runtime):
         else:
             config_file_s = ffi.NULL
 
-        self._domain = domain
+        self._domain_name = domain
         self._config_file = config_file
         self._domain = _FW.pyclr_create_appdomain(domain or ffi.NULL, config_file_s)
 
@@ -29,7 +29,7 @@ class NetFx(Runtime):
             initialized=True,
             shutdown=_FW is None,
             properties=dict(
-                domain=self._domain or "", config_file=str(self._config_file)
+                domain=self._domain_name or "", config_file=str(self._config_file)
             ),
         )
 

@@ -34,7 +34,6 @@ class Mono(Runtime):
             global_config_file=optional_path_as_string(global_config_file),
             libmono=libmono,
         )
-        print(self._version)
 
         if domain is None:
             self._domain = _ROOT_DOMAIN

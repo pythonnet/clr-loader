@@ -1,6 +1,8 @@
 Usage
 =====
 
+.. py:currentmodule:: clr_loader
+
 Getting a runtime
 -----------------
 

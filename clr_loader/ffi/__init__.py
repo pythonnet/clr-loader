@@ -16,6 +16,7 @@ for cdef in hostfxr.cdef + mono.cdef + netfx.cdef:
 
 def load_hostfxr(dotnet_root: Path):
     hostfxr_name = _get_dll_name("hostfxr")
+    dotnet_root = dotnet_root.absolute()
 
     # This will fail as soon as .NET hits version 10, but hopefully by then
     # we'll have a more robust way of finding the libhostfxr
@@ -27,6 +28,11 @@ def load_hostfxr(dotnet_root: Path):
             return ffi.dlopen(str(hostfxr_path))
         except Exception:
             pass
+
+    try:
+        return ffi.dlopen(str(dotnet_root / hostfxr_name))
+    except Exception:
+        pass
 
     raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}")
 

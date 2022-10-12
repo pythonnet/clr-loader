@@ -13,6 +13,8 @@ _IS_SHUTDOWN = False
 
 class DotnetCoreRuntime(Runtime):
     def __init__(self, runtime_config: Path, dotnet_root: Path, **params: str):
+        self._handle = None
+
         if _IS_SHUTDOWN:
             raise RuntimeError("Runtime can not be reinitialized")
 

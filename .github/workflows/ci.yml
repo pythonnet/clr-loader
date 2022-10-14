@@ -66,16 +66,21 @@ jobs:
       run: |
         choco install -y mono ${{ matrix.python == 'pypy3' && '--x86' || '' }}
 
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
     - name: Download wheel
       uses: actions/download-artifact@v3
       with:
         name: wheel
+        path: dist/
 
-    - name: Install wheel and deps
+    - name: Install wheel
+      shell: bash
       run: |
-        python -m pip install --upgrade pip
-        pip install ./*.whl
-        pip install pytest
+        pip install dist/*.whl
 
     - name: Test with pytest
       run: |

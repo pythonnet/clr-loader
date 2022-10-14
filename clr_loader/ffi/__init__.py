@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import cffi  # type: ignore
 
@@ -23,7 +23,7 @@ def load_hostfxr(dotnet_root: Path):
     hostfxr_path = dotnet_root / "host" / "fxr"
     hostfxr_paths = hostfxr_path.glob(f"?.*/{hostfxr_name}")
 
-    for hostfxr_path in reversed(sorted(hostfxr_paths)):
+    for hostfxr_path in reversed(sorted(hostfxr_paths, key=_path_to_version)):
         try:
             return ffi.dlopen(str(hostfxr_path))
         except Exception:
@@ -59,6 +59,15 @@ def load_netfx():
     path = dirname / arch / "ClrLoader.dll"
 
     return ffi.dlopen(str(path))
+
+
+def _path_to_version(path: Path) -> Tuple[int, int, int]:
+    name = path.parent.name
+    try:
+        res = list(map(int, name.split(".")))
+        return tuple(res + [0, 0, 0])[:3]
+    except Exception:
+        return (0, 0, 0)
 
 
 def _get_dll_name(name: str) -> str:

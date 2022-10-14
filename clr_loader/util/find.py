@@ -42,7 +42,7 @@ def find_dotnet_root() -> Path:
         prog_files = Path(prog_files)
         dotnet_root = prog_files / "dotnet"
     elif sys.platform == "darwin":
-        if sys.maxsize > 2**32: # is_64bits
+        if sys.maxsize > 2**32:  # is_64bits
             dotnet_root = Path("/usr/local/share/dotnet/x64")
         else:
             dotnet_root = Path("/usr/local/share/dotnet")

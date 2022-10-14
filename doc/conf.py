@@ -6,7 +6,8 @@ extensions = ["sphinx.ext.autodoc"]
 
 # Add parent to path for autodoc
 import sys, os
-sys.path.append(os.path.abspath('..'))
+
+sys.path.append(os.path.abspath(".."))
 
 # autodoc_typehints = "both"
 

@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=61", "setuptools_scm[toml]", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "clr_loader"
 description = "Generic pure Python loader for .NET runtimes"
 license = {text = "MIT"}
-version = "0.2.3"
+requires-python = ">=3.7"
 
 readme = "README.md"
 
@@ -22,6 +22,8 @@ classifiers = [
     "Operating System :: MacOS :: MacOS X",
 ]
 
+dynamic = ["version"]
+
 [[project.authors]]
 name = "Benedikt Reinartz"
 email = "filmor@gmail.com"
@@ -36,6 +38,8 @@ package-data = {"clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"]}
 
 [tool.setuptools.packages.find]
 include = ["clr_loader*"]
+
+[tool.setuptools_scm]
 
 [tool.pytest.ini_options]
 xfail_strict = true

@@ -7,14 +7,42 @@ on: [push, pull_request]
 
 jobs:
   build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-python@v4
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+    - name: Build
+      run: python -m build
+    - name: Upload source distribution
+      uses: actions/upload-artifact@v3
+      with:
+        name: sdist
+        path: "dist/*.tar.gz"
+        if-no-files-found: error
+    - name: Upload wheel
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheel
+        path: "dist/*.whl"
+        if-no-files-found: error
+
+  test:
     runs-on: ${{ matrix.os }}
+    needs: build
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python: ['3.10', '3.9', '3.8', '3.7'] # pypy3
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -22,18 +50,9 @@ jobs:
         dotnet-version: '6.0.x'
 
     - name: Set up Python ${{ matrix.python }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest cffi
-
-    - name: Build
-      run: |
-        pip install -e .
 
     - name: Cache Mono
       if: runner.os == 'Windows'
@@ -46,6 +65,22 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         choco install -y mono ${{ matrix.python == 'pypy3' && '--x86' || '' }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    - name: Download wheel
+      uses: actions/download-artifact@v3
+      with:
+        name: wheel
+        path: dist/
+
+    - name: Install wheel
+      shell: bash
+      run: |
+        pip install dist/*.whl
 
     - name: Test with pytest
       run: |

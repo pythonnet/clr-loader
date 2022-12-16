@@ -32,8 +32,10 @@ namespace ClrLoader
             {
                 var setup = new AppDomainSetup
                 {
+                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
                     ConfigurationFile = configFile
                 };
+                Print($"Base: {AppDomain.CurrentDomain.BaseDirectory}");
                 var domain = AppDomain.CreateDomain(name, null, setup);
 
                 Print($"Located domain {domain}");

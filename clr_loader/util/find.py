@@ -43,10 +43,14 @@ def find_dotnet_root() -> Path:
         prog_files = Path(prog_files)
         dotnet_root = prog_files / "dotnet"
     elif sys.platform == "darwin":
-        if "ARM" in platform.machine().upper():
-            dotnet_root = Path("/usr/local/share/dotnet")
-        else:
-            dotnet_root = Path("/usr/local/share/dotnet/x64")
+        dotnet_exec_paths = (
+            Path("/usr/local/share/dotnet/dotnet"),
+            Path("/usr/local/share/dotnet/x64/dotnet"))
+
+        for dotnet_exec in dotnet_exec_paths:
+            if dotnet_exec.is_file():
+                dotnet_root = dotnet_exec.parent.absolute()
+                break
 
     if dotnet_root is not None and dotnet_root.is_dir():
         return dotnet_root

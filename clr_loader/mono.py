@@ -24,6 +24,8 @@ class Mono(Runtime):
         jit_options: Optional[Sequence[str]] = None,
         config_file: Optional[Path] = None,
         global_config_file: Optional[Path] = None,
+        assembly_dir: Optional[str] = None,
+        config_dir: Optional[str] = None,
     ):
         self._assemblies: Dict[Path, Any] = {}
 
@@ -33,6 +35,8 @@ class Mono(Runtime):
             jit_options=jit_options,
             global_config_file=optional_path_as_string(global_config_file),
             libmono=libmono,
+            assembly_dir=assembly_dir,
+            config_dir=config_dir,
         )
 
         if domain is None:
@@ -121,10 +125,15 @@ def initialize(
     jit_options: Optional[Sequence[str]] = None,
     config_file: Optional[str] = None,
     global_config_file: Optional[str] = None,
+    assembly_dir: Optional[str] = None,
+    config_dir: Optional[str] = None
 ) -> str:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(libmono)
+
+        if assembly_dir is not None and config_dir is not None:
+            _MONO.mono_set_dirs(assembly_dir, config_dir)
 
         # Load in global config (i.e /etc/mono/config)
         global_encoded = global_config_file or ffi.NULL

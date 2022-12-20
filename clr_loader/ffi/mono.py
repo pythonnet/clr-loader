@@ -39,5 +39,7 @@ void mono_method_desc_free(MonoMethodDesc *method_desc);
 MonoObject* mono_runtime_invoke(MonoMethod *method, void *obj, void **params, MonoObject **exc);
 
 void* mono_object_unbox(MonoObject *object);
+
+void mono_set_dirs(const char *assembly_dir, const char* config_dir);
 """
 )

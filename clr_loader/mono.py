@@ -26,6 +26,7 @@ class Mono(Runtime):
         global_config_file: Optional[Path] = None,
         assembly_dir: Optional[str] = None,
         config_dir: Optional[str] = None,
+        set_signal_chaining: bool = False,
     ):
         self._assemblies: Dict[Path, Any] = {}
 
@@ -37,6 +38,7 @@ class Mono(Runtime):
             libmono=libmono,
             assembly_dir=assembly_dir,
             config_dir=config_dir,
+            set_signal_chaining=set_signal_chaining,
         )
 
         if domain is None:
@@ -126,7 +128,8 @@ def initialize(
     config_file: Optional[str] = None,
     global_config_file: Optional[str] = None,
     assembly_dir: Optional[str] = None,
-    config_dir: Optional[str] = None
+    config_dir: Optional[str] = None,
+    set_signal_chaining: bool = False,
 ) -> str:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
@@ -151,6 +154,9 @@ def initialize(
             _MONO.mono_jit_parse_options(len(options), options)
         else:
             options = []
+
+        if set_signal_chaining:
+            _MONO.mono_set_signal_chaining(True)
 
         if debug:
             _MONO.mono_debug_init(_MONO.MONO_DEBUG_FORMAT_MONO)

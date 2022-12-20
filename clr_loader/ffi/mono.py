@@ -41,5 +41,8 @@ MonoObject* mono_runtime_invoke(MonoMethod *method, void *obj, void **params, Mo
 void* mono_object_unbox(MonoObject *object);
 
 void mono_set_dirs(const char *assembly_dir, const char* config_dir);
+
+void mono_set_signal_chaining(bool chain_signals);
+
 """
 )

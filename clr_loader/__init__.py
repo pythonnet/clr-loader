@@ -30,6 +30,9 @@ def get_mono(
     sgen: bool = True,
     debug: bool = False,
     jit_options: Optional[Sequence[str]] = None,
+    assembly_dir: Optional[str] = None,
+    config_dir: Optional[str] = None,
+    set_signal_chaining: bool = False
 ) -> Runtime:
     """Get a Mono runtime instance
 
@@ -48,6 +51,20 @@ def get_mono(
         Whether to initialise Mono debugging
     :param jit_options:
         "Command line options" passed to Mono's ``mono_jit_parse_options``
+    :param assembly_dir:
+        The base directory for assemblies, passed to ``mono_set_dirs``
+    :param config_dir:
+        The base directory for configuration files, passed to ``mono_set_dirs``
+    :param set_signal_chaining:
+        Whether to enable signal chaining, passed to ``mono_set_signal_chaining``.
+        If it is enabled, the runtime saves the original signal handlers before
+        installing its own, and calls the original ones in the following cases:
+            - SIGSEGV/SIGABRT while executing native code
+            - SIGPROF
+            - SIGFPE
+            - SIGQUIT
+            - SIGUSR2
+        This currently only works on POSIX platforms
     """
     from .mono import Mono
 
@@ -62,6 +79,9 @@ def get_mono(
         config_file=_maybe_path(config_file),
         global_config_file=_maybe_path(global_config_file),
         libmono=libmono,
+        assembly_dir=assembly_dir,
+        config_dir=config_dir,
+        set_signal_chaining=set_signal_chaining,
     )
     return impl
 

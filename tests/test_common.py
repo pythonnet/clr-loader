@@ -46,6 +46,21 @@ def test_mono_debug(example_netstandard):
 
     run_tests(asm)
 
+def test_mono_signal_chaining(example_netstandard):
+    from clr_loader import get_mono
+
+    mono = get_mono(set_signal_chaining=True)
+    asm = mono.get_assembly(example_netstandard / "example.dll")
+
+    run_tests(asm)
+
+def test_mono_set_dir(example_netstandard):
+    from clr_loader import get_mono
+
+    mono = get_mono(assembly_dir="/usr/lib", config_dir="/etc")
+    asm = mono.get_assembly(example_netstandard / "example.dll")
+
+    run_tests(asm)
 
 def test_coreclr(example_netcore):
     from clr_loader import get_coreclr

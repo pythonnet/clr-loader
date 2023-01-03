@@ -1,5 +1,5 @@
 import os
-import os.path
+import platform
 import shutil
 import sys
 from pathlib import Path
@@ -42,7 +42,8 @@ def find_dotnet_root() -> Path:
         prog_files = Path(prog_files)
         dotnet_root = prog_files / "dotnet"
     elif sys.platform == "darwin":
-        if sys.maxsize > 2**32:  # is_64bits
+        if "ARM64" in os.uname().version and platform.machine() == "x86_64":
+            # Apple Silicon in Rosetta 2 mode
             dotnet_root = Path("/usr/local/share/dotnet/x64")
         else:
             dotnet_root = Path("/usr/local/share/dotnet")

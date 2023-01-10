@@ -141,7 +141,8 @@ def find_libmono(*, assembly_dir: str = None, sgen: bool = True) -> Path:
             from ctypes.util import find_library
             path = find_library(unix_name)
         else:
-            path = os.path.join(assembly_dir, "lib" + unix_name + ".so")
+            libname = "lib" + unix_name + ".so"
+            path = Path(assembly_dir) / "lib" / libname
 
     if path is None:
         raise RuntimeError("Could not find libmono")

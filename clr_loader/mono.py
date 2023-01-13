@@ -136,7 +136,7 @@ def initialize(
         _MONO = load_mono(libmono)
 
         if assembly_dir is not None and config_dir is not None:
-            _MONO.mono_set_dirs(assembly_dir, config_dir)
+            _MONO.mono_set_dirs(assembly_dir.encode("utf8"), config_dir.encode("utf8"))
 
         # Load in global config (i.e /etc/mono/config)
         global_encoded = global_config_file or ffi.NULL

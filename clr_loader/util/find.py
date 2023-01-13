@@ -105,7 +105,7 @@ def find_runtimes() -> Iterator[DotnetCoreRuntimeSpec]:
         return find_runtimes_in_root(dotnet_root)
 
 
-def find_libmono(*, sgen: bool = True) -> Path:
+def find_libmono(*, assembly_dir: str = None, sgen: bool = True) -> Path:
     """Find a suitable libmono dynamic library
 
     On Windows and macOS, we check the default installation directories.
@@ -137,9 +137,12 @@ def find_libmono(*, sgen: bool = True) -> Path:
         )
 
     else:
-        from ctypes.util import find_library
-
-        path = find_library(unix_name)
+        if assembly_dir == None:
+            from ctypes.util import find_library
+            path = find_library(unix_name)
+        else:
+            libname = "lib" + unix_name + ".so"
+            path = Path(assembly_dir) / "lib" / libname
 
     if path is None:
         raise RuntimeError("Could not find libmono")

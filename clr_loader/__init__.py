@@ -70,7 +70,7 @@ def get_mono(
 
     libmono = _maybe_path(libmono)
     if libmono is None:
-        libmono = find_libmono(sgen=sgen)
+        libmono = find_libmono(sgen=sgen, assembly_dir=assembly_dir)
 
     impl = Mono(
         # domain=domain,

@@ -20,6 +20,8 @@ __all__ = [
     "DotnetCoreRuntimeSpec",
 ]
 
+__version__ = "0.3.0.dev0"
+
 
 def get_mono(
     *,

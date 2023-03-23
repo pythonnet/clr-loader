@@ -102,7 +102,6 @@ class MonoMethod:
         self._ptr = ptr
 
     def __call__(self, ptr, size):
-        exception = ffi.new("MonoObject**")
         params = ffi.new("void*[2]")
 
         # Keep these alive until the function is called by assigning them locally
@@ -112,7 +111,7 @@ class MonoMethod:
         params[0] = ptr_ptr
         params[1] = size_ptr
 
-        res = _MONO.mono_runtime_invoke(self._ptr, ffi.NULL, params, exception)
+        res = _MONO.mono_runtime_invoke(self._ptr, ffi.NULL, params, ffi.NULL)
         _check_result(res, "Failed to call method")
 
         unboxed = ffi.cast("int32_t*", _MONO.mono_object_unbox(res))

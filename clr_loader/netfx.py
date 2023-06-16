@@ -1,3 +1,4 @@
+import locale
 import atexit
 from pathlib import Path
 from typing import Any, Optional
@@ -34,9 +35,10 @@ class NetFx(Runtime):
         )
 
     def _get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
+        encoding = "gbk" if locale.getpreferredencoding() == "cp936" else "utf8"
         func = _FW.pyclr_get_function(
             self._domain,
-            str(Path(assembly_path)).encode("utf8"),
+            str(Path(assembly_path)).encode(encoding),
             typename.encode("utf8"),
             function.encode("utf8"),
         )

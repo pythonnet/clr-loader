@@ -20,9 +20,8 @@ class DotnetCoreRuntime(Runtime):
 
         self._dotnet_root = Path(dotnet_root)
         self._dll = load_hostfxr(self._dotnet_root)
-        self._is_initialized = False
         self._handle = _get_handle(self._dll, self._dotnet_root, runtime_config)
-        self._load_func = _get_load_func(self._dll, self._handle)
+        self._load_func = None
 
         for key, value in params.items():
             self[key] = value
@@ -36,7 +35,7 @@ class DotnetCoreRuntime(Runtime):
 
     @property
     def is_initialized(self) -> bool:
-        return self._is_initialized
+        return self._load_func is not None
 
     @property
     def is_shutdown(self) -> bool:
@@ -81,10 +80,15 @@ class DotnetCoreRuntime(Runtime):
         for i in range(size_ptr[0]):
             yield (decode(keys_ptr[i]), decode(values_ptr[i]))
 
+    def _get_load_func(self):
+        if self._load_func is None:
+            self._load_func = _get_load_func(self._dll, self._handle)
+
+        return self._load_func
+
     def _get_callable(self, assembly_path: StrOrPath, typename: str, function: str):
         # TODO: Maybe use coreclr_get_delegate as well, supported with newer API
         # versions of hostfxr
-        self._is_initialized = True
 
         # Append assembly name to typename
         assembly_path = Path(assembly_path)
@@ -92,7 +96,7 @@ class DotnetCoreRuntime(Runtime):
         typename = f"{typename}, {assembly_name}"
 
         delegate_ptr = ffi.new("void**")
-        res = self._load_func(
+        res = self._get_load_func()(
             encode(str(assembly_path)),
             encode(typename),
             encode(function),
@@ -102,12 +106,6 @@ class DotnetCoreRuntime(Runtime):
         )
         check_result(res)
         return ffi.cast("component_entry_point_fn", delegate_ptr[0])
-
-    def _check_initialized(self) -> None:
-        if self._handle is None:
-            raise RuntimeError("Runtime is shut down")
-        elif not self._is_initialized:
-            raise RuntimeError("Runtime is not initialized")
 
     def shutdown(self) -> None:
         if self._handle is not None:

@@ -18,7 +18,7 @@ def example_netcore(tmpdir_factory):
 
 def build_example(tmpdir_factory, framework):
     out = Path(tmpdir_factory.mktemp(f"example-{framework}"))
-    proj_path = Path(__file__).parent.parent / "example"
+    proj_path = Path(__file__).parent.parent / "example" / "example.csproj"
 
     check_call(["dotnet", "build", str(proj_path), "-o", str(out), "-f", framework])
 
@@ -70,6 +70,18 @@ def test_coreclr(example_netcore: Path):
     from clr_loader import get_coreclr
 
     coreclr = get_coreclr(runtime_config=example_netcore / "example.runtimeconfig.json")
+    asm = coreclr.get_assembly(example_netcore / "example.dll")
+
+    run_tests(asm)
+
+
+def test_coreclr_properties(example_netcore: Path):
+    from clr_loader import get_coreclr
+
+    coreclr = get_coreclr(
+        runtime_config=example_netcore / "example.runtimeconfig.json",
+        properties=dict(APP_CONTEXT_BASE_DIRECTORY=str(example_netcore)),
+    )
     asm = coreclr.get_assembly(example_netcore / "example.dll")
 
     run_tests(asm)

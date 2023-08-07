@@ -51,9 +51,9 @@ namespace ClrLoader
         [DllExport("pyclr_get_function", CallingConvention.Cdecl)]
         public static IntPtr GetFunction(
             IntPtr domain,
-            [MarshalAs(UnmanagedType.LPStr)] string assemblyPath,
-            [MarshalAs(UnmanagedType.LPStr)] string typeName,
-            [MarshalAs(UnmanagedType.LPStr)] string function
+            [MarshalAs(UnmanagedType.LPUTF8Str)] string assemblyPath,
+            [MarshalAs(UnmanagedType.LPUTF8Str)] string typeName,
+            [MarshalAs(UnmanagedType.LPUTF8Str)] string function
         )
         {
             try

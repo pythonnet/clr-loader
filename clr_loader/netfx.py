@@ -14,13 +14,15 @@ class NetFx(Runtime):
     ):
         initialize()
         if config_file is not None:
-            config_file_s = str(config_file)
+            config_file_s = str(config_file).encode("utf8")
         else:
             config_file_s = ffi.NULL
 
+        domain_s = domain.encode("utf8") if domain else ffi.NULL
+
         self._domain_name = domain
         self._config_file = config_file
-        self._domain = _FW.pyclr_create_appdomain(domain or ffi.NULL, config_file_s)
+        self._domain = _FW.pyclr_create_appdomain(domain_s, config_file_s)
 
     def info(self) -> RuntimeInfo:
         return RuntimeInfo(
@@ -40,6 +42,11 @@ class NetFx(Runtime):
             typename.encode("utf8"),
             function.encode("utf8"),
         )
+
+        if func == ffi.NULL:
+            raise RuntimeError(
+                f"Failed to resolve {typename}.{function} from {assembly_path}"
+            )
 
         return func
 

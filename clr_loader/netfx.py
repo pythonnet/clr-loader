@@ -12,6 +12,8 @@ class NetFx(Runtime):
     def __init__(
         self, domain: Optional[str] = None, config_file: Optional[Path] = None
     ):
+        self._domain = None
+
         initialize()
         if config_file is not None:
             config_file_s = str(config_file).encode("utf8")

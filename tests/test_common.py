@@ -1,7 +1,6 @@
 import shutil
 import pytest
 from subprocess import check_call
-import os
 import sys
 from pathlib import Path
 

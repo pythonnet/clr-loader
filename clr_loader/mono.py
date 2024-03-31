@@ -86,7 +86,8 @@ class MethodDesc:
     def __init__(self, typename, function):
         self._desc = f"{typename}:{function}"
         self._ptr = _MONO.mono_method_desc_new(
-            self._desc.encode("utf8"), 1  # include_namespace
+            self._desc.encode("utf8"),
+            1,  # include_namespace
         )
 
     def search(self, image):

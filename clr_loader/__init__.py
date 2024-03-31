@@ -32,7 +32,7 @@ def get_mono(
     jit_options: Optional[Sequence[str]] = None,
     assembly_dir: Optional[str] = None,
     config_dir: Optional[str] = None,
-    set_signal_chaining: bool = False
+    set_signal_chaining: bool = False,
 ) -> Runtime:
     """Get a Mono runtime instance
 

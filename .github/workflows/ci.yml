@@ -27,6 +27,20 @@ jobs:
         path: "dist/*"
         if-no-files-found: error
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depths: 0
+    - uses: actions/setup-python@v4
+    - name: Install Ruff
+      run: pip install ruff
+    - name: Check format
+      run: ruff format --check
+    - name: Check lints
+      run: ruff check
+
   test:
     runs-on: ${{ matrix.os }}
     needs: build

@@ -6,13 +6,15 @@ from .ffi import ffi, load_hostfxr
 from .types import Runtime, RuntimeInfo, StrOrPath
 from .util import check_result
 
-__all__ = ["DotnetCoreRuntime"]
+__all__ = ["DotnetCoreRuntime", "DotnetCoreCommandRuntime"]
 
 _IS_SHUTDOWN = False
 
 
-class DotnetCoreRuntime(Runtime):
-    def __init__(self, runtime_config: Path, dotnet_root: Path, **params: str):
+class DotnetCoreRuntimeBase(Runtime):
+    _version: str
+
+    def __init__(self, dotnet_root: Path):
         self._handle = None
 
         if _IS_SHUTDOWN:
@@ -20,14 +22,7 @@ class DotnetCoreRuntime(Runtime):
 
         self._dotnet_root = Path(dotnet_root)
         self._dll = load_hostfxr(self._dotnet_root)
-        self._handle = _get_handle(self._dll, self._dotnet_root, runtime_config)
         self._load_func = None
-
-        for key, value in params.items():
-            self[key] = value
-
-        # TODO: Get version
-        self._version = "<undefined>"
 
     @property
     def dotnet_root(self) -> Path:
@@ -122,7 +117,31 @@ class DotnetCoreRuntime(Runtime):
         )
 
 
-def _get_handle(dll, dotnet_root: StrOrPath, runtime_config: StrOrPath):
+class DotnetCoreRuntime(DotnetCoreRuntimeBase):
+    def __init__(self, runtime_config: Path, dotnet_root: Path, **params: str):
+        super().__init__(dotnet_root)
+        self._handle = _get_handle_for_runtime_config(self._dll, self._dotnet_root, runtime_config)
+
+        for key, value in params.items():
+            self[key] = value
+
+        # TODO: Get version
+        self._version = "<undefined>"
+
+
+class DotnetCoreCommandRuntime(DotnetCoreRuntimeBase):
+    def __init__(self, entry_dll: Path, dotnet_root: Path, **params: str):
+        super().__init__(dotnet_root)
+        self._handle = _get_handle_for_dotnet_command_line(self._dll, self._dotnet_root, entry_dll)
+
+        for key, value in params.items():
+            self[key] = value
+
+        # TODO: Get version
+        self._version = "<undefined>"
+
+
+def _get_handle_for_runtime_config(dll, dotnet_root: StrOrPath, runtime_config: StrOrPath):
     params = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     # params.host_path = ffi.new("char_t[]", encode(sys.executable))
@@ -135,6 +154,29 @@ def _get_handle(dll, dotnet_root: StrOrPath, runtime_config: StrOrPath):
     res = dll.hostfxr_initialize_for_runtime_config(
         encode(str(Path(runtime_config))), params, handle_ptr
     )
+    check_result(res)
+
+    return handle_ptr[0]
+
+
+def _get_handle_for_dotnet_command_line(dll, dotnet_root: StrOrPath, entry_dll: StrOrPath):
+    params = ffi.new("hostfxr_initialize_parameters*")
+    params.size = ffi.sizeof("hostfxr_initialize_parameters")
+    params.host_path = ffi.NULL
+    dotnet_root_p = ffi.new("char_t[]", encode(str(Path(dotnet_root))))
+    params.dotnet_root = dotnet_root_p
+
+    handle_ptr = ffi.new("hostfxr_handle*")
+
+    args_ptr = ffi.new("char_t*[1]")
+    arg_ptr = ffi.new("char_t[]", encode(str(Path(entry_dll))))
+    args_ptr[0] = arg_ptr
+    res = dll.hostfxr_initialize_for_dotnet_command_line(
+        1,
+        args_ptr,
+        params, handle_ptr
+    )
+
     check_result(res)
 
     return handle_ptr[0]

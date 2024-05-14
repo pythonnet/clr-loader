@@ -33,6 +33,8 @@ def get_mono(
     assembly_dir: Optional[str] = None,
     config_dir: Optional[str] = None,
     set_signal_chaining: bool = False,
+    trace_mask: Optional[str] = None,
+    trace_level: Optional[str] = None,
 ) -> Runtime:
     """Get a Mono runtime instance
 

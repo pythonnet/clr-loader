@@ -31,6 +31,7 @@ def get_mono(
     debug: bool = False,
     jit_options: Optional[Sequence[str]] = None,
     assembly_dir: Optional[str] = None,
+    disable_warning: Optional[bool] = False,
     config_dir: Optional[str] = None,
     set_signal_chaining: bool = False
 ) -> Runtime:
@@ -53,6 +54,9 @@ def get_mono(
         "Command line options" passed to Mono's ``mono_jit_parse_options``
     :param assembly_dir:
         The base directory for assemblies, passed to ``mono_set_dirs``
+    :param disable_warning:
+        Whether to disable the warning message that is printed for Mono versions
+        older than 6.12
     :param config_dir:
         The base directory for configuration files, passed to ``mono_set_dirs``
     :param set_signal_chaining:
@@ -80,8 +84,9 @@ def get_mono(
         global_config_file=_maybe_path(global_config_file),
         libmono=libmono,
         assembly_dir=assembly_dir,
+        disable_warning=disable_warning,
         config_dir=config_dir,
-        set_signal_chaining=set_signal_chaining,
+        set_signal_chaining=set_signal_chaining
     )
     return impl
 

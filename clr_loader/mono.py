@@ -25,6 +25,7 @@ class Mono(Runtime):
         config_file: Optional[Path] = None,
         global_config_file: Optional[Path] = None,
         assembly_dir: Optional[str] = None,
+        disable_warning: Optional[bool] = False,
         config_dir: Optional[str] = None,
         set_signal_chaining: bool = False,
     ):
@@ -37,6 +38,7 @@ class Mono(Runtime):
             global_config_file=optional_path_as_string(global_config_file),
             libmono=libmono,
             assembly_dir=assembly_dir,
+            disable_warning=disable_warning,
             config_dir=config_dir,
             set_signal_chaining=set_signal_chaining,
         )
@@ -121,6 +123,22 @@ class MonoMethod:
         return unboxed[0]
 
 
+def _warn_mono_version(ver_str: str):
+    ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
+    if ver is not None:
+        major = int(ver.group("major"))
+        minor = int(ver.group("minor"))
+
+        if major < 6 or (major == 6 and minor < 12):
+            import warnings
+
+            warnings.warn(
+                "Hosting Mono versions before v6.12 is known to be problematic. "
+                "If the process crashes shortly after you see this message, try "
+                "updating Mono to at least v6.12."
+            )
+
+
 def initialize(
     libmono: Optional[Path],
     debug: bool = False,
@@ -128,6 +146,7 @@ def initialize(
     config_file: Optional[str] = None,
     global_config_file: Optional[str] = None,
     assembly_dir: Optional[str] = None,
+    disable_warning: Optional[bool] = False,
     config_dir: Optional[str] = None,
     set_signal_chaining: bool = False,
 ) -> str:
@@ -168,20 +187,8 @@ def initialize(
     build = _MONO.mono_get_runtime_build_info()
     _check_result(build, "Failed to get Mono version")
     ver_str = ffi.string(build).decode("utf8")  # e.g. '6.12.0.122 (tarball)'
-
-    ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
-    if ver is not None:
-        major = int(ver.group("major"))
-        minor = int(ver.group("minor"))
-
-        if major < 6 or (major == 6 and minor < 12):
-            import warnings
-
-            warnings.warn(
-                "Hosting Mono versions before v6.12 is known to be problematic. "
-                "If the process crashes shortly after you see this message, try "
-                "updating Mono to at least v6.12."
-            )
+    if not disable_warning:
+        _warn_mono_version(ver_str)
 
     atexit.register(_release)
     return ver_str

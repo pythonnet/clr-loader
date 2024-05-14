@@ -27,6 +27,8 @@ class Mono(Runtime):
         assembly_dir: Optional[str] = None,
         config_dir: Optional[str] = None,
         set_signal_chaining: bool = False,
+        trace_mask: Optional[str] = None,
+        trace_level: Optional[str] = None
     ):
         self._assemblies: Dict[Path, Any] = {}
 
@@ -39,6 +41,8 @@ class Mono(Runtime):
             assembly_dir=assembly_dir,
             config_dir=config_dir,
             set_signal_chaining=set_signal_chaining,
+            trace_mask=trace_mask,
+            trace_level=trace_level,
         )
 
         if domain is None:
@@ -130,10 +134,19 @@ def initialize(
     assembly_dir: Optional[str] = None,
     config_dir: Optional[str] = None,
     set_signal_chaining: bool = False,
+    trace_mask: Optional[str] = None,
+    trace_level: Optional[str] = None
 ) -> str:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
         _MONO = load_mono(libmono)
+
+        if trace_mask is not None:
+            _MONO.mono_trace_set_mask_string(trace_mask.encode("utf8"))
+
+        if trace_level is not None:
+            _MONO.mono_trace_set_level_string(trace_level.encode("utf8"))
+
 
         if assembly_dir is not None and config_dir is not None:
             _MONO.mono_set_dirs(assembly_dir.encode("utf8"), config_dir.encode("utf8"))

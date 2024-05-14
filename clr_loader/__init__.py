@@ -32,7 +32,9 @@ def get_mono(
     jit_options: Optional[Sequence[str]] = None,
     assembly_dir: Optional[str] = None,
     config_dir: Optional[str] = None,
-    set_signal_chaining: bool = False
+    set_signal_chaining: bool = False,
+    trace_mask: Optional[str] = None,
+    trace_level: Optional[str] = None
 ) -> Runtime:
     """Get a Mono runtime instance
 
@@ -65,6 +67,25 @@ def get_mono(
             - SIGQUIT
             - SIGUSR2
         This currently only works on POSIX platforms
+    :param trace_mask:
+        The trace filter, ordinarily set by the MONO_LOG_MASK environment variable.
+        It can be set to one or more of the values, separated by comma. The default
+        if this parameter is not used is "all". Possible options are:
+            - all
+            - aot
+            - asm
+            - cfg
+            - dll
+            - gc
+            - io-layer
+            - io-selector
+            - security
+            - threadpool
+            - type
+    :param trace_level:
+        The trace level, ordinarily set by the MONO_LOG_LEVEL environment variable.
+        It can be set to one of "error", "critical", "warning", "message", "info",
+        or "debug".
     """
     from .mono import Mono
 
@@ -82,6 +103,8 @@ def get_mono(
         assembly_dir=assembly_dir,
         config_dir=config_dir,
         set_signal_chaining=set_signal_chaining,
+        trace_mask=trace_mask,
+        trace_level=trace_level
     )
     return impl
 

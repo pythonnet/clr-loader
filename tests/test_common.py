@@ -57,6 +57,24 @@ def test_mono_signal_chaining(example_netstandard: Path):
     run_tests(asm)
 
 
+def test_mono_trace_mask(example_netstandard: Path):
+    from clr_loader import get_mono
+
+    mono = get_mono(trace_mask="all")
+    asm = mono.get_assembly(example_netstandard / "example.dll")
+
+    run_tests(asm)
+
+
+def test_mono_trace_level(example_netstandard: Path):
+    from clr_loader import get_mono
+
+    mono = get_mono(trace_level="message")
+    asm = mono.get_assembly(example_netstandard / "example.dll")
+
+    run_tests(asm)
+
+
 def test_mono_set_dir(example_netstandard: Path):
     from clr_loader import get_mono
 

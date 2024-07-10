@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+
 project = "clr-loader"
 copyright = "2022, Benedikt Reinartz"
 author = "Benedikt Reinartz"
@@ -5,9 +8,7 @@ author = "Benedikt Reinartz"
 extensions = ["sphinx.ext.autodoc"]
 
 # Add parent to path for autodoc
-import sys, os
-
-sys.path.append(os.path.abspath(".."))
+sys.path.append(str(Path("..").absolute()))
 
 # autodoc_typehints = "both"
 

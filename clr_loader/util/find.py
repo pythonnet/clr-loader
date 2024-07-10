@@ -137,8 +137,9 @@ def find_libmono(*, assembly_dir: str = None, sgen: bool = True) -> Path:
         )
 
     else:
-        if assembly_dir == None:
+        if assembly_dir is None:
             from ctypes.util import find_library
+
             path = find_library(unix_name)
         else:
             libname = "lib" + unix_name + ".so"

@@ -35,7 +35,7 @@ email = "filmor@gmail.com"
 Sources = "https://github.com/pythonnet/clr-loader"
 Documentation = "https://pythonnet.github.io/clr-loader/"
 
-[optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest"
 ]

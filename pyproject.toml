@@ -10,7 +10,10 @@ requires-python = ">=3.7"
 
 readme = "README.md"
 
-dependencies = ["cffi>=1.13"]
+dependencies = [
+    "cffi >= 1.13; python_version <= '3.8'",
+    "cffi >= 1.17; python_version >= '3.8'",
+]
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -31,6 +34,11 @@ email = "filmor@gmail.com"
 [project.urls]
 Sources = "https://github.com/pythonnet/clr-loader"
 Documentation = "https://pythonnet.github.io/clr-loader/"
+
+[optional-dependencies]
+dev = [
+    "pytest"
+]
 
 [tool.setuptools]
 zip-safe = false

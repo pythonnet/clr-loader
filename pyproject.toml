@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "setuptools_scm[toml]", "wheel"]
+requires = ["setuptools>=75", "setuptools_scm[toml]"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -43,6 +43,7 @@ dev = [
 [tool.setuptools]
 zip-safe = false
 package-data = {"clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"]}
+license-files = []
 
 [tool.setuptools.packages.find]
 include = ["clr_loader*"]

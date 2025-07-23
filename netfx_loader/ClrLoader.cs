@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using NXPorts.Attributes;
 
@@ -21,6 +22,17 @@ namespace ClrLoader
             }
         }
 
+        private static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
+
         [DllExport("pyclr_create_appdomain", CallingConvention.Cdecl)]
         public static IntPtr CreateAppDomain(
             [MarshalAs(UnmanagedType.LPUTF8Str)] string name,
@@ -28,16 +40,17 @@ namespace ClrLoader
         )
         {
             Print($"Creating AppDomain {name} with {configFile}");
+
+            var clrLoaderDir = AssemblyDirectory;
             if (!string.IsNullOrEmpty(name))
             {
                 var setup = new AppDomainSetup
                 {
-                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                    ApplicationBase = clrLoaderDir,
                     ConfigurationFile = configFile
                 };
-                Print($"Base: {AppDomain.CurrentDomain.BaseDirectory}");
+                Print($"Base: {clrLoaderDir}");
                 var domain = AppDomain.CreateDomain(name, null, setup);
-
                 Print($"Located domain {domain}");
 
                 var domainData = new DomainData(domain);
@@ -61,8 +74,8 @@ namespace ClrLoader
             try
             {
                 var domainData = _domains[(int)domain];
-                var deleg = domainData.GetEntryPoint(assemblyPath, typeName, function);
-                return Marshal.GetFunctionPointerForDelegate(deleg);
+                Print($"Getting functor for function {function} of type {typeName} in assembly {assemblyPath}");
+                return domainData.GetFunctor(assemblyPath, typeName, function);
             }
             catch (Exception exc)
             {

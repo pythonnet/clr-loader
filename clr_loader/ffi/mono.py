@@ -44,5 +44,8 @@ void mono_set_dirs(const char *assembly_dir, const char* config_dir);
 
 void mono_set_signal_chaining(bool chain_signals);
 
+void mono_trace_set_level_string(const char* value);
+void mono_trace_set_mask_string(const char* value);
+
 """
 )

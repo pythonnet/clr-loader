@@ -141,6 +141,6 @@ def _truncate(string: str, length: int) -> str:
     if length <= 1:
         raise TypeError("length must be > 1")
     if len(string) > length - 1:
-        return f"{string[:length-1]}…"
+        return f"{string[: length - 1]}…"
     else:
         return string

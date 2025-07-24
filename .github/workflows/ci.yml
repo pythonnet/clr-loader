@@ -2,22 +2,22 @@ name: Python Tests
 
 on:
   push:
-    branches: master
+    branches: [master]
   pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - uses: actions/setup-dotnet@v1
-    - uses: astral-sh/setup-uv@v4
+    - uses: astral-sh/setup-uv@v6
     - name: Build
       run: uv build
     - name: Upload source distribution
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-output
         path: "dist/*"
@@ -26,10 +26,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depths: 0
-    - uses: astral-sh/setup-uv@v4
+    - uses: astral-sh/setup-uv@v6
     - name: Install Ruff
       run: uv tool install ruff
     - name: Check format
@@ -46,7 +46,7 @@ jobs:
         python: ['3.13', '3.12', '3.11', '3.10', '3.9', '3.8'] # pypy3
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -54,13 +54,13 @@ jobs:
         dotnet-version: '6.0.x'
 
     - name: Set up Python ${{ matrix.python }}
-      uses: astral-sh/setup-uv@v4
+      uses: astral-sh/setup-uv@v6
       with:
         python-version: ${{ matrix.python }}
 
     - name: Cache Mono
       if: runner.os == 'Windows'
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ${{ env.TEMP }}\chocolatey
         key: ${{ runner.os }}-chocolatey-${{ matrix.python == 'pypy3' && '32' || '64' }}
@@ -76,7 +76,7 @@ jobs:
         uv pip install pytest
 
     - name: Download wheel
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: build-output
         path: dist/
@@ -96,7 +96,7 @@ jobs:
 
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: build-output
         path: dist/

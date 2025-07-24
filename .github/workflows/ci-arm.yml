@@ -2,7 +2,7 @@ name: ARM64 Tests
 
 on:
   push:
-    branches: master
+    branches: [master]
   pull_request:
 
 jobs:
@@ -10,13 +10,12 @@ jobs:
     runs-on: [self-hosted, linux, ARM64]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: |
-          3.1.x
           6.0.x
 
     - name: Create virtualenv

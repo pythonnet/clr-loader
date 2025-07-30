@@ -26,6 +26,8 @@ namespace ClrLoader
         {
             get
             {
+                // This is needed in case the DLL was shadow-copied
+                // (Otherwise .Location would work)
                 string codeBase = Assembly.GetExecutingAssembly().CodeBase;
                 UriBuilder uri = new UriBuilder(codeBase);
                 string path = Uri.UnescapeDataString(uri.Path);

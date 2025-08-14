@@ -23,18 +23,20 @@ def load_hostfxr(dotnet_root: Path):
     hostfxr_path = dotnet_root / "host" / "fxr"
     hostfxr_paths = hostfxr_path.glob(f"?.*/{hostfxr_name}")
 
+    error_report = list()
+
     for hostfxr_path in reversed(sorted(hostfxr_paths, key=_path_to_version)):
         try:
             return ffi.dlopen(str(hostfxr_path))
-        except Exception:
-            pass
+        except Exception as err:
+            error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
     try:
         return ffi.dlopen(str(dotnet_root / hostfxr_name))
-    except Exception:
-        pass
+    except Exception as err:
+        error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
-    raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}")
+    raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}. The following paths were scanned:\n\n"+("\n\n".join(error_report)))
 
 
 def load_mono(path: Optional[Path] = None):

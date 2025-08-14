@@ -36,7 +36,10 @@ def load_hostfxr(dotnet_root: Path):
     except Exception as err:
         error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
-    raise RuntimeError(f"Could not find a suitable hostfxr library in {dotnet_root}. The following paths were scanned:\n\n"+("\n\n".join(error_report)))
+    raise RuntimeError(
+        f"Could not find a suitable hostfxr library in {dotnet_root}. The following paths were scanned:\n\n"
+        + ("\n\n".join(error_report))
+    )
 
 
 def load_mono(path: Optional[Path] = None):

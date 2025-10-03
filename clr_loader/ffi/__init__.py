@@ -18,10 +18,9 @@ def load_hostfxr(dotnet_root: Path):
     hostfxr_name = _get_dll_name("hostfxr")
     dotnet_root = dotnet_root.absolute()
 
-    # This will fail as soon as .NET hits version 10, but hopefully by then
-    # we'll have a more robust way of finding the libhostfxr
+    # Find all hostfxr versions by looking for the library file in version subdirectories
     hostfxr_path = dotnet_root / "host" / "fxr"
-    hostfxr_paths = hostfxr_path.glob(f"?.*/{hostfxr_name}")
+    hostfxr_paths = hostfxr_path.glob(f"*/{hostfxr_name}")
 
     error_report = list()
 
@@ -69,7 +68,9 @@ def load_netfx():
 def _path_to_version(path: Path) -> Tuple[int, int, int]:
     name = path.parent.name
     try:
-        res = list(map(int, name.split(".")))
+        # Handle pre-release versions like "10.0.0-rc.1" by taking only the version part
+        version_part = name.split("-")[0]
+        res = list(map(int, version_part.split(".")))
         return tuple(res + [0, 0, 0])[:3]
     except Exception:
         return (0, 0, 0)

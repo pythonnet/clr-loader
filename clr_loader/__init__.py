@@ -157,7 +157,7 @@ def get_coreclr_command_line(
     *,
     entry_dll: StrOrPath,
     dotnet_root: Optional[StrOrPath] = None,
-    properties: Optional[Dict[str, str]] = None
+    properties: Optional[Dict[str, str]] = None,
 ) -> Runtime:
     """Get a CoreCLR (.NET Core) runtime instance
     The returned ``DotnetCoreRuntimeCommandLine`` also acts as a mapping of the config
@@ -178,7 +178,9 @@ def get_coreclr_command_line(
     if dotnet_root is None:
         dotnet_root = find_dotnet_root()
 
-    impl = DotnetCoreCommandRuntime(entry_dll=_maybe_path(entry_dll), dotnet_root=dotnet_root)
+    impl = DotnetCoreCommandRuntime(
+        entry_dll=_maybe_path(entry_dll), dotnet_root=dotnet_root
+    )
     if properties:
         for key, value in properties.items():
             impl[key] = value

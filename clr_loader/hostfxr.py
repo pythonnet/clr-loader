@@ -120,7 +120,9 @@ class DotnetCoreRuntimeBase(Runtime):
 class DotnetCoreRuntime(DotnetCoreRuntimeBase):
     def __init__(self, runtime_config: Path, dotnet_root: Path, **params: str):
         super().__init__(dotnet_root)
-        self._handle = _get_handle_for_runtime_config(self._dll, self._dotnet_root, runtime_config)
+        self._handle = _get_handle_for_runtime_config(
+            self._dll, self._dotnet_root, runtime_config
+        )
 
         for key, value in params.items():
             self[key] = value
@@ -132,7 +134,9 @@ class DotnetCoreRuntime(DotnetCoreRuntimeBase):
 class DotnetCoreCommandRuntime(DotnetCoreRuntimeBase):
     def __init__(self, entry_dll: Path, dotnet_root: Path, **params: str):
         super().__init__(dotnet_root)
-        self._handle = _get_handle_for_dotnet_command_line(self._dll, self._dotnet_root, entry_dll)
+        self._handle = _get_handle_for_dotnet_command_line(
+            self._dll, self._dotnet_root, entry_dll
+        )
 
         for key, value in params.items():
             self[key] = value
@@ -141,7 +145,9 @@ class DotnetCoreCommandRuntime(DotnetCoreRuntimeBase):
         self._version = "<undefined>"
 
 
-def _get_handle_for_runtime_config(dll, dotnet_root: StrOrPath, runtime_config: StrOrPath):
+def _get_handle_for_runtime_config(
+    dll, dotnet_root: StrOrPath, runtime_config: StrOrPath
+):
     params = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     # params.host_path = ffi.new("char_t[]", encode(sys.executable))
@@ -159,7 +165,9 @@ def _get_handle_for_runtime_config(dll, dotnet_root: StrOrPath, runtime_config: 
     return handle_ptr[0]
 
 
-def _get_handle_for_dotnet_command_line(dll, dotnet_root: StrOrPath, entry_dll: StrOrPath):
+def _get_handle_for_dotnet_command_line(
+    dll, dotnet_root: StrOrPath, entry_dll: StrOrPath
+):
     params = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     params.host_path = ffi.NULL
@@ -172,9 +180,7 @@ def _get_handle_for_dotnet_command_line(dll, dotnet_root: StrOrPath, entry_dll: 
     arg_ptr = ffi.new("char_t[]", encode(str(Path(entry_dll))))
     args_ptr[0] = arg_ptr
     res = dll.hostfxr_initialize_for_dotnet_command_line(
-        1,
-        args_ptr,
-        params, handle_ptr
+        1, args_ptr, params, handle_ptr
     )
 
     check_result(res)

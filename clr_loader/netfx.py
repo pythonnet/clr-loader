@@ -12,7 +12,7 @@ class NetFx(Runtime):
     def __init__(
         self, domain: Optional[str] = None, config_file: Optional[Path] = None
     ):
-        self._domain = None
+        self._domain: Optional[str] = None
 
         initialize()
         if config_file is not None:
@@ -22,8 +22,8 @@ class NetFx(Runtime):
 
         domain_s = domain.encode("utf8") if domain else ffi.NULL
 
-        self._domain_name = domain
-        self._config_file = config_file
+        self._domain_name: Optional[str] = domain
+        self._config_file: Optional[Path] = config_file
         self._domain = _FW.pyclr_create_appdomain(domain_s, config_file_s)
 
     def info(self) -> RuntimeInfo:

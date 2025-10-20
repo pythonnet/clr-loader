@@ -13,7 +13,7 @@ jobs:
       with:
         fetch-depth: 0
     - uses: actions/setup-dotnet@v5
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
     - name: Build
       run: uv build
     - name: Upload source distribution
@@ -29,7 +29,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depths: 0
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
     - name: Install Ruff
       run: uv tool install ruff
     - name: Check format
@@ -64,7 +64,7 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Set up Python ${{ matrix.python }}
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: ${{ matrix.python }}
 

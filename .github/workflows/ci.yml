@@ -43,7 +43,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm, windows-latest, windows-11-arm, macos-13, macos-13-arm64]
+        # macos-13-arm64, windows-11-arm
+        # TODO:
+        # - Install mono via install-package action
+        # - Update macos images to at least 14 as 13 is retired
+        # - Update ubuntu images
+        os: [ubuntu-22.04, ubuntu-22.04-arm, windows-latest, macos-13]
         python: ['3.14', '3.13', '3.12', '3.11', '3.10', '3.9', '3.8'] # pypy3
 
     steps:

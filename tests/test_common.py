@@ -77,7 +77,7 @@ def test_mono_trace_level(example_netstandard: Path):
 def test_mono_set_dir(example_netstandard: Path):
     from clr_loader import get_mono
 
-    mono = get_mono(assembly_dir="/usr/lib", config_dir="/etc")
+    mono = get_mono(assembly_dir="/usr", config_dir="/etc")
     asm = mono.get_assembly(example_netstandard / "example.dll")
 
     run_tests(asm)

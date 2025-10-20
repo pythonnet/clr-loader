@@ -105,7 +105,7 @@ def find_runtimes() -> Iterator[DotnetCoreRuntimeSpec]:
         return find_runtimes_in_root(dotnet_root)
 
 
-def find_libmono(*, assembly_dir: str = None, sgen: bool = True) -> Path:
+def find_libmono(*, assembly_dir: Optional[str] = None, sgen: bool = True) -> Path:
     """Find a suitable libmono dynamic library
 
     On Windows and macOS, we check the default installation directories.

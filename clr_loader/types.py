@@ -5,7 +5,10 @@ from typing import Any, Callable, Dict, Optional, Union
 
 __all__ = ["StrOrPath"]
 
-StrOrPath = Union[str, PathLike]
+try:
+    StrOrPath = Union[str, PathLike[str]]
+except TypeError:
+    StrOrPath = Union[str, PathLike]
 
 
 @dataclass
@@ -34,7 +37,7 @@ class RuntimeInfo:
 
     def __str__(self) -> str:
         return (
-            f"Runtime: {self.kind}\n"
+            f"Runtime: {self.kind}\n"  # pyright: ignore[reportImplicitStringConcatenation]
             "=============\n"
             f"  Version:      {self.version}\n"
             f"  Initialized:  {self.initialized}\n"
@@ -51,9 +54,9 @@ class ClrFunction:
     def __init__(
         self, runtime: "Runtime", assembly: StrOrPath, typename: str, func_name: str
     ):
-        self._assembly = assembly
-        self._class = typename
-        self._name = func_name
+        self._assembly: StrOrPath = assembly
+        self._class: str = typename
+        self._name: str = func_name
 
         self._callable = runtime._get_callable(assembly, typename, func_name)
 
@@ -69,8 +72,8 @@ class ClrFunction:
 
 class Assembly:
     def __init__(self, runtime: "Runtime", path: StrOrPath):
-        self._runtime = runtime
-        self._path = path
+        self._runtime: "Runtime" = runtime
+        self._path: StrOrPath = path
 
     def get_function(self, name: str, func: Optional[str] = None) -> ClrFunction:
         """Get a wrapped .NET function instance

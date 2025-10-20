@@ -37,7 +37,7 @@ Documentation = "https://pythonnet.github.io/clr-loader/"
 
 [dependency-groups]
 dev = [
-    "pytest"
+    "pytest>=7.0"
 ]
 
 [tool.setuptools]

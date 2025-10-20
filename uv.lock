@@ -170,7 +170,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest" }]
+dev = [{ name = "pytest", specifier = ">=7.0" }]
 
 [[package]]
 name = "colorama"

@@ -1,20 +1,27 @@
 import sys
 from pathlib import Path
-from typing import Generator, Tuple
+from typing import Generator, Tuple, Optional
 
 from .ffi import ffi, load_hostfxr
 from .types import Runtime, RuntimeInfo, StrOrPath
 from .util import check_result
 
-__all__ = ["DotnetCoreRuntime", "DotnetCoreCommandRuntime"]
+__all__ = ["DotnetCoreRuntime"]
 
 _IS_SHUTDOWN = False
 
 
-class DotnetCoreRuntimeBase(Runtime):
+class DotnetCoreRuntime(Runtime):
     _version: str
 
-    def __init__(self, dotnet_root: Path):
+    def __init__(
+        self,
+        *,
+        dotnet_root: Path,
+        runtime_config: Optional[Path] = None,
+        entry_dll: Optional[Path] = None,
+        **params: str,
+    ):
         self._handle = None
 
         if _IS_SHUTDOWN:
@@ -23,6 +30,23 @@ class DotnetCoreRuntimeBase(Runtime):
         self._dotnet_root = Path(dotnet_root)
         self._dll = load_hostfxr(self._dotnet_root)
         self._load_func = None
+
+        if runtime_config is not None:
+            self._handle = _get_handle_for_runtime_config(
+                self._dll, self._dotnet_root, runtime_config
+            )
+        elif entry_dll is not None:
+            self._handle = _get_handle_for_dotnet_command_line(
+                self._dll, self._dotnet_root, entry_dll
+            )
+        else:
+            raise ValueError("Either runtime_config or entry_dll must be provided")
+
+        for key, value in params.items():
+            self[key] = value
+
+        # TODO: Get version
+        self._version: str = "<undefined>"
 
     @property
     def dotnet_root(self) -> Path:
@@ -115,34 +139,6 @@ class DotnetCoreRuntimeBase(Runtime):
             shutdown=self._handle is None,
             properties=dict(self) if not _IS_SHUTDOWN else {},
         )
-
-
-class DotnetCoreRuntime(DotnetCoreRuntimeBase):
-    def __init__(self, runtime_config: Path, dotnet_root: Path, **params: str):
-        super().__init__(dotnet_root)
-        self._handle = _get_handle_for_runtime_config(
-            self._dll, self._dotnet_root, runtime_config
-        )
-
-        for key, value in params.items():
-            self[key] = value
-
-        # TODO: Get version
-        self._version = "<undefined>"
-
-
-class DotnetCoreCommandRuntime(DotnetCoreRuntimeBase):
-    def __init__(self, entry_dll: Path, dotnet_root: Path, **params: str):
-        super().__init__(dotnet_root)
-        self._handle = _get_handle_for_dotnet_command_line(
-            self._dll, self._dotnet_root, entry_dll
-        )
-
-        for key, value in params.items():
-            self[key] = value
-
-        # TODO: Get version
-        self._version = "<undefined>"
 
 
 def _get_handle_for_runtime_config(

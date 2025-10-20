@@ -97,9 +97,9 @@ def test_coreclr_command_line(example_netcore: Path):
 
 
 def _do_test_coreclr_command_line(example_netcore: Path):
-    from clr_loader import get_coreclr_command_line
+    from clr_loader import get_coreclr
 
-    coreclr = get_coreclr_command_line(entry_dll=example_netcore / "example.dll")
+    coreclr = get_coreclr(entry_dll=example_netcore / "example.dll")
     asm = coreclr.get_assembly(example_netcore / "example.dll")
 
     run_tests(asm)

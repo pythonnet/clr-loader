@@ -62,11 +62,13 @@ def get_mono(
         Whether to enable signal chaining, passed to ``mono_set_signal_chaining``.
         If it is enabled, the runtime saves the original signal handlers before
         installing its own, and calls the original ones in the following cases:
-            - SIGSEGV/SIGABRT while executing native code
-            - SIGPROF
-            - SIGFPE
-            - SIGQUIT
-            - SIGUSR2
+
+        - SIGSEGV/SIGABRT while executing native code
+        - SIGPROF
+        - SIGFPE
+        - SIGQUIT
+        - SIGUSR2
+
         This currently only works on POSIX platforms
     """
     from .mono import Mono

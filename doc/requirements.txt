@@ -1,5 +1,0 @@
-sphinx
-
-# Theme, force pygments update
-furo>=2022.9.15
-pygments>=2.7

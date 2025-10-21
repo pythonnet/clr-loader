@@ -6,17 +6,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - uses: astral-sh/setup-uv@v7
     - uses: actions/checkout@v5
+
     - name: Build Sphinx documentation
       run: |
-        pip install -r doc/requirements.txt
-        sphinx-build doc/ ./doc/_build/html/
+        uv run --group doc sphinx-build doc/ _site/
 
     - name: Upload artifact
       # Automatically uploads an artifact from the './_site' directory by default
       uses: actions/upload-pages-artifact@v3
-      with:
-        path: doc/_build/html/
 
   deploy:
     if: github.ref == 'refs/heads/master'

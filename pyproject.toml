@@ -39,6 +39,11 @@ Documentation = "https://pythonnet.github.io/clr-loader/"
 dev = [
     "pytest>=7.0"
 ]
+doc = [
+    "furo>=2022.9.15",
+    "pygments>=2.7",
+    "sphinx>=5.3.0",
+]
 
 [tool.setuptools]
 zip-safe = false

@@ -127,7 +127,7 @@ class DotnetCoreRuntime(Runtime):
         return ffi.cast("component_entry_point_fn", delegate_ptr[0])
 
     def shutdown(self) -> None:
-        if self._handle is not None:
+        if self._handle and self._dll:
             self._dll.hostfxr_close(self._handle)
             self._handle = None
 

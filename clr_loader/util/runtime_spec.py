@@ -18,7 +18,8 @@ class DotnetCoreRuntimeSpec:
 
     @property
     def floor_version(self) -> str:
-        return f"{self.version[:3]}.0"
+        major, minor, _ = self.version.split(".")
+        return f"{major}.{minor}.0"
 
     @property
     def runtime_config(self) -> Dict[str, Any]:

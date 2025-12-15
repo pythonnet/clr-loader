@@ -70,7 +70,7 @@ jobs:
 
     - name: Cache Mono
       if: runner.os == 'Windows'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.TEMP }}\chocolatey
         key: ${{ runner.os }}-chocolatey-${{ matrix.python == 'pypy3' && '32' || '64' }}

@@ -17,7 +17,7 @@ jobs:
     - name: Build
       run: uv build
     - name: Upload source distribution
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: build-output
         path: "dist/*"
@@ -70,7 +70,7 @@ jobs:
 
     - name: Cache Mono
       if: runner.os == 'Windows'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.TEMP }}\chocolatey
         key: ${{ runner.os }}-chocolatey-${{ matrix.python == 'pypy3' && '32' || '64' }}
@@ -88,7 +88,7 @@ jobs:
         uv pip install pytest
 
     - name: Download wheel
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build-output
         path: dist/
@@ -108,7 +108,7 @@ jobs:
 
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: build-output
         path: dist/

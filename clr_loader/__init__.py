@@ -139,7 +139,7 @@ def get_coreclr(
             candidates = [
                 rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"
             ]
-            candidates.sort(key=lambda spec: spec.version, reverse=True)
+            candidates.sort(key=lambda spec: spec.version_info, reverse=True)
             if not candidates:
                 raise RuntimeError("Failed to find a suitable runtime")
 

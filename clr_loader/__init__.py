@@ -97,6 +97,7 @@ def get_coreclr(
     dotnet_root: Optional[StrOrPath] = None,
     properties: Optional[Dict[str, str]] = None,
     runtime_spec: Optional[DotnetCoreRuntimeSpec] = None,
+    runtime_version: Optional[str] = None,
 ) -> Runtime:
     """Get a CoreCLR (.NET Core) runtime instance
 
@@ -122,7 +123,11 @@ def get_coreclr(
     :param runtime_spec:
         If the ``runtime_config`` is not specified, the concrete runtime to use
         can be controlled by passing this parameter. Possible values can be
-        retrieved using :py:func:`find_runtimes`."""
+        retrieved using :py:func:`find_runtimes`.
+    :param runtime_version:
+        If neither the ``runtime_config`` nor the ``runtime_spec`` are specified,
+        the concrete runtime version to use can be controlled by passing the
+        major.minor version to this parameter."""
 
     from .hostfxr import DotnetCoreRuntime
 
@@ -139,6 +144,12 @@ def get_coreclr(
             candidates = [
                 rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"
             ]
+            if runtime_version is not None:
+                candidates = [
+                    rt
+                    for rt in candidates
+                    if f"{rt.version_info[0]}.{rt.version_info[1]}" == runtime_version
+                ]
             candidates.sort(key=lambda spec: spec.version_info, reverse=True)
             if not candidates:
                 raise RuntimeError("Failed to find a suitable runtime")

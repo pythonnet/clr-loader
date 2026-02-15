@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "clr_loader"
 description = "Generic pure Python loader for .NET runtimes"
-license = {text = "MIT"}
+license-files = ["LICENSE"]
 requires-python = ">=3.7"
 
 readme = "README.md"
@@ -18,7 +18,6 @@ dependencies = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -48,7 +47,6 @@ doc = [
 [tool.setuptools]
 zip-safe = false
 package-data = {"clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"]}
-license-files = []
 
 [tool.setuptools.packages.find]
 include = ["clr_loader*"]

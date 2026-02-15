@@ -3,7 +3,7 @@
 import distutils
 from distutils.command.build import build as _build
 from setuptools.command.develop import develop as _develop
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
 from setuptools import Distribution
 from setuptools import setup, Command
 

@@ -11,8 +11,8 @@ requires-python = ">=3.7"
 readme = "README.md"
 
 dependencies = [
-    "cffi >= 1.13; python_version <= '3.8'",
-    "cffi >= 1.17; python_version >= '3.8'",
+    "cffi >=1.13; python_version < '3.8'",
+    "cffi >=1.17; python_version >= '3.8'",
 ]
 
 classifiers = [
@@ -36,13 +36,17 @@ Documentation = "https://pythonnet.github.io/clr-loader/"
 
 [dependency-groups]
 dev = [
-    "pytest>=7.0"
+    "pytest >=7.0; python_version <= '3.9'",
+    "pytest >=9.0, <10.0; python_version > '3.9'",
+    "ruff >=0.15",
 ]
 doc = [
-    "furo>=2022.9.15",
-    "pygments>=2.7",
-    "sphinx>=5.3.0",
+    "furo >= 2025.0",
+    "sphinx >=9.0, <10.0",
 ]
+
+[tool.uv.dependency-groups.doc]
+requires-python = ">=3.12"
 
 [tool.setuptools]
 zip-safe = false

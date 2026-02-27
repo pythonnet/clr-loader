@@ -19,7 +19,7 @@ def build_example(tmp_path_factory: pytest.TempPathFactory, framework: str) -> P
     out = tmp_path_factory.mktemp(f"example-{framework}")
     proj_path = Path(__file__).parent.parent / "example" / "example.csproj"
 
-    check_call(["dotnet", "build", str(proj_path), "-o", str(out), "-f", framework])
+    _ = check_call(["dotnet", "build", str(proj_path), "-o", str(out), "-f", framework])
 
     return out
 

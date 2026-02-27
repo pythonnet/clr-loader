@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from ..types import StrOrPath
 from .clr_error import ClrError
@@ -15,7 +14,7 @@ __all__ = [
 ]
 
 
-def optional_path_as_string(path: Optional[StrOrPath]) -> Optional[str]:
+def optional_path_as_string(path: StrOrPath | None) -> str | None:
     if path is None:
         return None
     return path_as_string(path)

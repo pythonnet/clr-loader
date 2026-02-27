@@ -49,7 +49,7 @@ jobs:
         # - Update macos images to at least 14 as 13 is retired
         # - Update ubuntu images
         os: [ubuntu-22.04, ubuntu-22.04-arm, windows-latest, macos-13]
-        python: ['3.14', '3.13', '3.12', '3.11', '3.10', '3.9', '3.8'] # pypy3
+        python: ['3.14', '3.13', '3.12', '3.11', '3.10'] # pypy3
 
     steps:
     - name: Set Environment on macOS

@@ -1,19 +1,16 @@
 [build-system]
-requires = ["setuptools>=75", "setuptools_scm[toml]"]
+requires = ["setuptools>=80", "setuptools_scm[toml]"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "clr_loader"
 description = "Generic pure Python loader for .NET runtimes"
 license-files = ["LICENSE"]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 
 readme = "README.md"
 
-dependencies = [
-    "cffi >=1.13; python_version < '3.8'",
-    "cffi >=1.17; python_version >= '3.8'",
-]
+dependencies = ["cffi >= 1.17"]
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,17 +37,14 @@ dev = [
     "pytest >=9.0, <10.0; python_version > '3.9'",
     "ruff >=0.15",
 ]
-doc = [
-    "furo >= 2025.0",
-    "sphinx >=9.0, <10.0",
-]
+doc = ["furo >= 2025.0", "sphinx >=9.0, <10.0"]
 
 [tool.uv.dependency-groups.doc]
 requires-python = ">=3.12"
 
 [tool.setuptools]
 zip-safe = false
-package-data = {"clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"]}
+package-data = { "clr_loader.ffi" = ["dlls/x86/*.dll", "dlls/amd64/*.dll"] }
 
 [tool.setuptools.packages.find]
 include = ["clr_loader*"]
@@ -59,9 +53,7 @@ include = ["clr_loader*"]
 
 [tool.pytest.ini_options]
 xfail_strict = true
-testpaths = [
-    "tests"
-]
+testpaths = ["tests"]
 
 [tool.mypy]
 allow-redefinition = true

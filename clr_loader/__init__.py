@@ -1,9 +1,8 @@
+from collections.abc import Sequence
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Dict, Optional, Sequence
 
-from .types import Assembly, Runtime, RuntimeInfo
-from .util import StrOrPath
+from .types import Assembly, Runtime, RuntimeInfo, StrOrPath
 from .util.find import find_dotnet_root, find_libmono, find_runtimes
 from .util.runtime_spec import DotnetCoreRuntimeSpec
 
@@ -24,17 +23,17 @@ __all__ = [
 def get_mono(
     *,
     # domain: Optional[str] = None,
-    config_file: Optional[StrOrPath] = None,
-    global_config_file: Optional[StrOrPath] = None,
-    libmono: Optional[StrOrPath] = None,
+    config_file: StrOrPath | None = None,
+    global_config_file: StrOrPath | None = None,
+    libmono: StrOrPath | None = None,
     sgen: bool = True,
     debug: bool = False,
-    jit_options: Optional[Sequence[str]] = None,
-    assembly_dir: Optional[str] = None,
-    config_dir: Optional[str] = None,
+    jit_options: Sequence[str] | None = None,
+    assembly_dir: StrOrPath | None = None,
+    config_dir: StrOrPath | None = None,
     set_signal_chaining: bool = False,
-    trace_mask: Optional[str] = None,
-    trace_level: Optional[str] = None,
+    trace_mask: str | None = None,
+    trace_level: str | None = None,
 ) -> Runtime:
     """Get a Mono runtime instance
 
@@ -92,12 +91,12 @@ def get_mono(
 
 def get_coreclr(
     *,
-    runtime_config: Optional[StrOrPath] = None,
-    entry_dll: Optional[StrOrPath] = None,
-    dotnet_root: Optional[StrOrPath] = None,
-    properties: Optional[Dict[str, str]] = None,
-    runtime_spec: Optional[DotnetCoreRuntimeSpec] = None,
-    runtime_version: Optional[str] = None,
+    runtime_config: StrOrPath | None = None,
+    entry_dll: StrOrPath | None = None,
+    dotnet_root: StrOrPath | None = None,
+    properties: dict[str, str] | None = None,
+    runtime_spec: DotnetCoreRuntimeSpec | None = None,
+    runtime_version: str | None = None,
 ) -> Runtime:
     """Get a CoreCLR (.NET Core) runtime instance
 
@@ -179,7 +178,7 @@ def get_coreclr(
 
 
 def get_netfx(
-    *, domain: Optional[str] = None, config_file: Optional[StrOrPath] = None
+    *, domain: str | None = None, config_file: StrOrPath | None = None
 ) -> Runtime:
     """Get a .NET Framework runtime instance
 
@@ -197,7 +196,7 @@ def get_netfx(
     return impl
 
 
-def _maybe_path(p: Optional[StrOrPath]) -> Optional[Path]:
+def _maybe_path(p: StrOrPath | None) -> Path | None:
     if p is None:
         return None
     else:

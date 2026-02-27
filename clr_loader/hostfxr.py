@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Generator, Tuple, Optional
+from collections.abc import Generator
 
 from .ffi import ffi, load_hostfxr
 from .types import Runtime, RuntimeInfo, StrOrPath
@@ -18,8 +18,8 @@ class DotnetCoreRuntime(Runtime):
         self,
         *,
         dotnet_root: Path,
-        runtime_config: Optional[Path] = None,
-        entry_dll: Optional[Path] = None,
+        runtime_config: Path | None = None,
+        entry_dll: Path | None = None,
         **params: str,
     ):
         self._handle = None
@@ -81,7 +81,7 @@ class DotnetCoreRuntime(Runtime):
         )
         check_result(res)
 
-    def __iter__(self) -> Generator[Tuple[str, str], None, None]:
+    def __iter__(self) -> Generator[tuple[str, str], None, None]:
         if self.is_shutdown:
             raise RuntimeError("Runtime is shut down")
         max_size = 100

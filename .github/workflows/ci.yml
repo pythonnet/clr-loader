@@ -78,14 +78,17 @@ jobs:
 
         exclude:
           # Broken ctypes find_library
-          - category: macos
-            platform: arm64
+          - os:
+              category: macos
+              platform: arm64
             python: '3.10'
-          - category: macos
-            platform: arm64
+          - os:
+              category: macos
+              platform: arm64
             python: '3.11'
-          - category: macos
-            platform: arm64
+          - os:
+              category: macos
+              platform: arm64
             python: '3.12'
 
     steps:

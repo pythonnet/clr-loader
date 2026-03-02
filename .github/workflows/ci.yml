@@ -77,6 +77,8 @@ jobs:
         python: ['3.14', '3.13', '3.12', '3.11', '3.10'] # pypy3
 
     steps:
+    - uses: actions/checkout@v6
+
     - name: Install Mono
       uses: ./.github/actions/install-mono
       with:
@@ -94,8 +96,6 @@ jobs:
         cache-python: true
         activate-environment: true
         enable-cache: true
-
-    - uses: actions/checkout@v6
 
     - name: Install dependencies
       run: |

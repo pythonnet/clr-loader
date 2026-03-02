@@ -95,9 +95,7 @@ jobs:
       uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.python }}${{ matrix.os.suffix }}
-        cache-python: true
         activate-environment: true
-        enable-cache: true
 
     - name: Install dependencies
       run: |

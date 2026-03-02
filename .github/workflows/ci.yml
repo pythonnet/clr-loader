@@ -96,10 +96,11 @@ jobs:
       with:
         python-version: cpython-${{ matrix.python }}${{ matrix.os.suffix }}
         cache-python: true
+        activate-environment: true
+        enable-cache: true
 
     - name: Install dependencies
       run: |
-        uv venv
         uv pip install pytest
 
     - name: Download wheel

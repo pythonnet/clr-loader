@@ -62,13 +62,13 @@ runs:
       if: runner.os == 'macOS' && inputs.arch == 'x64'
       run: |
         arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        arch -x86_64 /usr/local/bin/brew install mono
+        arch -x86_64 /usr/local/bin/brew install --ignore-dependencies mono
       shell: sh
 
     - name: Install on macOS (arm64)
       if: runner.os == 'macOS' && inputs.arch != 'x64'
       run: |
         brew update
-        brew install mono
+        brew install --ignore-dependencies mono
       shell: sh
 

@@ -88,6 +88,7 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0'
+        architecture: ${{ matrix.os.platform }}
 
     - name: Set up Python ${{ matrix.python }}
       uses: astral-sh/setup-uv@v7

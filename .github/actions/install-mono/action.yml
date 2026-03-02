@@ -43,9 +43,9 @@ runs:
     - name: Install on Linux
       if: runner.os == 'Linux'
       run: |
-        sudo mkdir .apt
-        sudo apt-get -o Dir::Cache=".apt" update
-        sudo apt-get -o Dir::Cache=".apt" install -y mono-runtime-sgen
+        sudo mkdir -p ./.apt/archives/partial
+        sudo apt-get -o Dir::Cache="./.apt" update
+        sudo apt-get -o Dir::Cache="./.apt" install -y mono-runtime-sgen
       shell: sh
 
     - name: Install on Windows (x86)

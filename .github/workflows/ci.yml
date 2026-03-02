@@ -38,53 +38,90 @@ jobs:
       run: ruff check
 
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.instance }}
     needs: build
     strategy:
       fail-fast: false
       matrix:
-        # macos-13-arm64, windows-11-arm
-        # TODO:
-        # - Install mono via install-package action
-        # - Update macos images to at least 14 as 13 is retired
-        # - Update ubuntu images
-        os: [ubuntu-22.04, ubuntu-22.04-arm, windows-latest, macos-13]
-        python: ['3.14', '3.13', '3.12', '3.11', '3.10'] # pypy3
+        os:
+          - category: windows
+            platform: x64
+            instance: windows-latest
+            suffix:   -windows-x86_64-none
+
+          - category: windows
+            platform: x86
+            instance: windows-latest
+            suffix:   -windows-x86-none
+
+          - category: ubuntu
+            platform: x64
+            instance: ubuntu-22.04
+            suffix:   ""
+
+          - category: ubuntu
+            platform: arm64
+            instance: ubuntu-22.04-arm
+            suffix:   ""
+
+          - category: macos
+            platform: x64
+            instance: macos-15
+            suffix:   -macos-x86_64-none
+
+          - category: macos
+            platform: arm64
+            instance: macos-15
+            suffix:   -macos-aarch64-none
+
+        python: ['3.14', '3.13', '3.12', '3.11', '3.10']
+
+        exclude:
+          # Broken ctypes find_library
+          - os:
+              category: macos
+              platform: arm64
+            python: '3.10'
+          - os:
+              category: macos
+              platform: arm64
+            python: '3.11'
+          - os:
+              category: macos
+              platform: arm64
+            python: '3.12'
+
+          # Fails to call mono methods
+          - os:
+              category: windows
+              platform: x86
+            python: '3.13'
 
     steps:
-    - name: Set Environment on macOS
-      uses: maxim-lobanov/setup-xamarin@v1
-      if: ${{ matrix.os.category == 'macos' }}
+    - uses: actions/checkout@v6
+
+    - name: Install Mono
+      uses: ./.github/actions/install-mono
       with:
-        mono-version: latest
+        arch: ${{ matrix.os.platform }}
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      # use most current version until architecture: support is released
+      uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.0'
+        architecture: ${{ matrix.os.platform }}
 
     - name: Set up Python ${{ matrix.python }}
       uses: astral-sh/setup-uv@v7
       with:
-        python-version: ${{ matrix.python }}
-
-    - name: Cache Mono
-      if: runner.os == 'Windows'
-      uses: actions/cache@v5
-      with:
-        path: ${{ env.TEMP }}\chocolatey
-        key: ${{ runner.os }}-chocolatey-${{ matrix.python == 'pypy3' && '32' || '64' }}
-
-    - name: Install Mono
-      if: runner.os == 'Windows'
-      run: |
-        choco install -y mono ${{ matrix.python == 'pypy3' && '--x86' || '' }}
-
-    - uses: actions/checkout@v6
+        python-version: cpython-${{ matrix.python }}${{ matrix.os.suffix }}
+        cache-python: true
+        activate-environment: true
+        enable-cache: true
 
     - name: Install dependencies
       run: |
-        uv venv
         uv pip install pytest
 
     - name: Download wheel
@@ -100,7 +137,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        uv run pytest
+        pytest
 
   deploy:
     runs-on: ubuntu-latest

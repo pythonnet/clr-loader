@@ -91,6 +91,12 @@ jobs:
               platform: arm64
             python: '3.12'
 
+          # Fails to call mono methods
+          - os:
+              category: windows
+              platform: x86
+            python: '3.13'
+
     steps:
     - uses: actions/checkout@v6
 

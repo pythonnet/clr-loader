@@ -95,7 +95,6 @@ jobs:
       uses: astral-sh/setup-uv@v7
       with:
         python-version: cpython-${{ matrix.python }}${{ matrix.os.suffix }}
-        cache-dependency-glob: ""
         cache-python: true
         activate-environment: true
         enable-cache: true
@@ -117,7 +116,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        uv run pytest
+        pytest
 
   deploy:
     runs-on: ubuntu-latest

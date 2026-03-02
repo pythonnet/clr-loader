@@ -1,23 +1,22 @@
-#!/usr/bin/env python
+import logging
+from pathlib import Path
+from typing import Any, cast
+from os import putenv
 
-import distutils
-from distutils.command.build import build as _build
-from setuptools.command.develop import develop as _develop
+from setuptools import Command, Distribution, setup
 from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
-from setuptools import Distribution
-from setuptools import setup, Command
-
-import os
+from setuptools.command.build import build as _build
+from setuptools.command.develop import develop as _develop
 
 # Disable SourceLink during the build until it can read repo-format v1, #1613
-os.environ["EnableSourceControlManagerQueries"] = "false"
+putenv("EnableSourceControlManagerQueries", "false")
 
 
 class DotnetLib:
-    def __init__(self, name, path, **kwargs):
-        self.name = name
-        self.path = path
-        self.args = kwargs
+    def __init__(self, name: str, path: str, **kwargs):
+        self.name: str = name
+        self.path: str = path
+        self.args: dict[str, Any] = kwargs
 
 
 class build_dotnet(Command):
@@ -51,13 +50,14 @@ class build_dotnet(Command):
             self.build_lib = build.build_lib
 
     def run(self):
-        dotnet_modules = self.distribution.dotnet_libs
+        dotnet_modules: list[DotnetLib] = cast(
+            list[DotnetLib], self.distribution.dotnet_libs
+        )
+        build_lib = Path(cast(str, self.build_lib))
 
         for lib in dotnet_modules:
-            output = os.path.join(
-                os.path.abspath(self.build_lib), lib.args.pop("output")
-            )
-            rename = lib.args.pop("rename", {})
+            output = build_lib.absolute() / cast(str, lib.args.pop("output"))
+            rename: dict[str, str] = lib.args.pop("rename", {})
 
             opts = sum(
                 [
@@ -70,25 +70,23 @@ class build_dotnet(Command):
             opts.extend(["--configuration", self.dotnet_config])
             opts.extend(["--output", output])
 
-            self.announce("Running dotnet build...", level=distutils.log.INFO)
+            self.announce("Running dotnet build...", level=logging.INFO)
             self.spawn(["dotnet", "build", lib.path] + opts)
 
             for k, v in rename.items():
-                source = os.path.join(output, k)
-                dest = os.path.join(output, v)
+                source = output / k
+                dest = output / v
 
-                if os.path.isfile(source):
+                if source.is_file():
                     try:
-                        os.remove(dest)
+                        source.unlink()
                     except OSError:
                         pass
 
-                    self.move_file(src=source, dst=dest, level=distutils.log.INFO)
+                    self.move_file(src=source, dst=dest, level=logging.INFO)
                 else:
                     self.warn(
-                        "Can't find file to rename: {}, current dir: {}".format(
-                            source, os.getcwd()
-                        )
+                        f"Can't find file to rename: {source}, current dir: {Path('.').absolute()}",
                     )
 
 

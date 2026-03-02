@@ -3,12 +3,14 @@ import platform
 import shutil
 import sys
 from pathlib import Path
-from typing import Iterator, Optional
+from collections.abc import Iterator
+
+from ..types import StrOrPath
 
 from .runtime_spec import DotnetCoreRuntimeSpec
 
 
-def find_dotnet_cli() -> Optional[Path]:
+def find_dotnet_cli() -> Path | None:
     dotnet_path = shutil.which("dotnet")
     if not dotnet_path:
         return None
@@ -105,7 +107,7 @@ def find_runtimes() -> Iterator[DotnetCoreRuntimeSpec]:
         return find_runtimes_in_root(dotnet_root)
 
 
-def find_libmono(*, assembly_dir: Optional[str] = None, sgen: bool = True) -> Path:
+def find_libmono(*, assembly_dir: StrOrPath | None = None, sgen: bool = True) -> Path:  # noqa: F821
     """Find a suitable libmono dynamic library
 
     On Windows and macOS, we check the default installation directories.
@@ -142,7 +144,7 @@ def find_libmono(*, assembly_dir: Optional[str] = None, sgen: bool = True) -> Pa
 
             path = find_library(unix_name)
         else:
-            libname = "lib" + unix_name + ".so"
+            libname: str = "lib" + unix_name + ".so"
             path = Path(assembly_dir) / "lib" / libname
 
     if path is None:

@@ -1,7 +1,8 @@
 import atexit
 import re
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence
+from typing import Any
+from collections.abc import Sequence
 
 from .ffi import ffi, load_mono
 from .types import Runtime, RuntimeInfo, StrOrPath
@@ -17,20 +18,20 @@ _ROOT_DOMAIN: Any = None
 class Mono(Runtime):
     def __init__(
         self,
-        libmono: Optional[Path],
+        libmono: Path | None,
         *,
-        domain: Optional[str] = None,
+        domain: str | None = None,
         debug: bool = False,
-        jit_options: Optional[Sequence[str]] = None,
-        config_file: Optional[Path] = None,
-        global_config_file: Optional[Path] = None,
-        assembly_dir: Optional[str] = None,
-        config_dir: Optional[str] = None,
+        jit_options: Sequence[str] | None = None,
+        config_file: Path | None = None,
+        global_config_file: Path | None = None,
+        assembly_dir: StrOrPath | None = None,
+        config_dir: StrOrPath | None = None,
         set_signal_chaining: bool = False,
-        trace_mask: Optional[str] = None,
-        trace_level: Optional[str] = None,
+        trace_mask: str | None = None,
+        trace_level: str | None = None,
     ):
-        self._assemblies: Dict[Path, Any] = {}
+        self._assemblies: dict[Path, Any] = {}
 
         self._version: str = initialize(
             config_file=optional_path_as_string(config_file),
@@ -129,16 +130,16 @@ class MonoMethod:
 
 
 def initialize(
-    libmono: Optional[Path],
+    libmono: Path | None,
     debug: bool = False,
-    jit_options: Optional[Sequence[str]] = None,
-    config_file: Optional[str] = None,
-    global_config_file: Optional[str] = None,
-    assembly_dir: Optional[str] = None,
-    config_dir: Optional[str] = None,
+    jit_options: Sequence[str] | None = None,
+    config_file: str | None = None,
+    global_config_file: str | None = None,
+    assembly_dir: StrOrPath | None = None,
+    config_dir: StrOrPath | None = None,
     set_signal_chaining: bool = False,
-    trace_mask: Optional[str] = None,
-    trace_level: Optional[str] = None,
+    trace_mask: str | None = None,
+    trace_level: str | None = None,
 ) -> str:
     global _MONO, _ROOT_DOMAIN
     if _MONO is None:
@@ -151,7 +152,10 @@ def initialize(
             _MONO.mono_trace_set_level_string(trace_level.encode("utf8"))
 
         if assembly_dir is not None and config_dir is not None:
-            _MONO.mono_set_dirs(assembly_dir.encode("utf8"), config_dir.encode("utf8"))
+            _MONO.mono_set_dirs(
+                path_as_string(assembly_dir).encode("utf8"),
+                path_as_string(config_dir).encode("utf8"),
+            )
 
         # Load in global config (i.e /etc/mono/config)
         global_encoded = global_config_file or ffi.NULL

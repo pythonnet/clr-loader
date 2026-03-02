@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, TextIO, Tuple
+from typing import Any, TextIO
 
 
 @dataclass
@@ -13,7 +13,7 @@ class DotnetCoreRuntimeSpec:
     path: Path
 
     @property
-    def version_info(self) -> Tuple[int, int, int, str]:
+    def version_info(self) -> tuple[int, int, int, str]:
         base, _, suffix = self.version.partition("-")
         major, minor, patch = base.split(".")
         return (int(major), int(minor), int(patch), suffix)
@@ -27,7 +27,7 @@ class DotnetCoreRuntimeSpec:
         return f"{self.version_info[0]}.{self.version_info[1]}.0"
 
     @property
-    def runtime_config(self) -> Dict[str, Any]:
+    def runtime_config(self) -> dict[str, Any]:
         return {
             "runtimeOptions": {
                 "tfm": self.tfm,

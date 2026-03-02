@@ -1,14 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass, field
 from os import PathLike
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any
+from collections.abc import Callable
 
 __all__ = ["StrOrPath"]
 
-try:
-    StrOrPath = Union[str, PathLike[str]]
-except TypeError:
-    StrOrPath = Union[str, PathLike]
+StrOrPath = str | PathLike[str]
 
 
 @dataclass
@@ -33,7 +31,7 @@ class RuntimeInfo:
     version: str
     initialized: bool
     shutdown: bool
-    properties: Dict[str, str] = field(repr=False)
+    properties: dict[str, str] = field(repr=False)
 
     def __str__(self) -> str:
         return (
@@ -75,7 +73,7 @@ class Assembly:
         self._runtime: "Runtime" = runtime
         self._path: StrOrPath = path
 
-    def get_function(self, name: str, func: Optional[str] = None) -> ClrFunction:
+    def get_function(self, name: str, func: str | None = None) -> ClrFunction:
         """Get a wrapped .NET function instance
 
         The function must be ``static``, and it must have the signature

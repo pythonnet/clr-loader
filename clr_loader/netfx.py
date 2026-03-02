@@ -1,6 +1,6 @@
 import atexit
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .ffi import ffi, load_netfx
 from .types import Runtime, RuntimeInfo, StrOrPath
@@ -9,10 +9,8 @@ _FW: Any = None
 
 
 class NetFx(Runtime):
-    def __init__(
-        self, domain: Optional[str] = None, config_file: Optional[Path] = None
-    ):
-        self._domain: Optional[str] = None
+    def __init__(self, domain: str | None = None, config_file: Path | None = None):
+        self._domain: str | None = None
 
         initialize()
         if config_file is not None:
@@ -22,8 +20,8 @@ class NetFx(Runtime):
 
         domain_s = domain.encode("utf8") if domain else ffi.NULL
 
-        self._domain_name: Optional[str] = domain
-        self._config_file: Optional[Path] = config_file
+        self._domain_name: str | None = domain
+        self._config_file: Path | None = config_file
         self._domain = _FW.pyclr_create_appdomain(domain_s, config_file_s)
 
     def info(self) -> RuntimeInfo:

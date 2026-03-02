@@ -1,13 +1,10 @@
-from typing import Optional
-
-
 class ClrError(Exception):
     def __init__(
         self,
         hresult: int,
-        name: Optional[str] = None,
-        message: Optional[str] = None,
-        comment: Optional[str] = None,
+        name: str | None = None,
+        message: str | None = None,
+        comment: str | None = None,
     ):
         self.hresult = hresult
         self.name = name

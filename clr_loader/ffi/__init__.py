@@ -1,14 +1,13 @@
 import sys
 from pathlib import Path
-from typing import Optional, Tuple
 
-import cffi  # type: ignore
+import cffi
 
 from . import hostfxr, mono, netfx
 
 __all__ = ["ffi", "load_hostfxr", "load_mono", "load_netfx"]
 
-ffi = cffi.FFI()  # type: ignore
+ffi = cffi.FFI()
 
 for cdef in hostfxr.cdef + mono.cdef + netfx.cdef:
     ffi.cdef(cdef)
@@ -22,7 +21,7 @@ def load_hostfxr(dotnet_root: Path):
     hostfxr_path = dotnet_root / "host" / "fxr"
     hostfxr_paths = hostfxr_path.glob(f"*/{hostfxr_name}")
 
-    error_report = list()
+    error_report: list[str] = []
 
     for hostfxr_path in reversed(sorted(hostfxr_paths, key=_path_to_version)):
         try:
@@ -41,7 +40,7 @@ def load_hostfxr(dotnet_root: Path):
     )
 
 
-def load_mono(path: Optional[Path] = None):
+def load_mono(path: Path | None = None):
     # Preload C++ standard library, Mono needs that and doesn't properly link against it
     if sys.platform == "linux":
         ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
@@ -65,7 +64,7 @@ def load_netfx():
     return ffi.dlopen(str(path))
 
 
-def _path_to_version(path: Path) -> Tuple[int, int, int]:
+def _path_to_version(path: Path) -> tuple[int, int, int]:
     name = path.parent.name
     try:
         # Handle pre-release versions like "10.0.0-rc.1" by taking only the version part

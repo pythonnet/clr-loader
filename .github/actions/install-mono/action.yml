@@ -42,11 +42,9 @@ runs:
 
     - name: Install on Linux
       if: runner.os == 'Linux'
-      run: |
-        mkdir -p ./.apt/archives/partial
-        sudo apt-get -o Dir::Cache="./.apt" update
-        sudo apt-get -o Dir::Cache="./.apt" install -y mono-runtime-sgen
-      shell: sh
+      uses: awalsh128/cache-apt-pkgs-action@v1
+      with:
+        packages: mono-runtime-sgen
 
     - name: Install on Windows (x86)
       if: runner.os == 'Windows' && inputs.arch == 'x86'

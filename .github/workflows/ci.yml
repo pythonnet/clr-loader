@@ -125,7 +125,7 @@ jobs:
         uv pip install pytest
 
     - name: Download wheel
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: build-output
         path: dist/
@@ -145,7 +145,7 @@ jobs:
 
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: build-output
         path: dist/

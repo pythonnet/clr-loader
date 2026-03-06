@@ -33,11 +33,10 @@ Documentation = "https://pythonnet.github.io/clr-loader/"
 
 [dependency-groups]
 dev = [
-    "pytest >=7.0; python_version <= '3.9'",
-    "pytest >=9.0, <10.0; python_version > '3.9'",
+    "pytest >=9.0, <10.0",
     "ruff >=0.15",
 ]
-doc = ["furo >= 2025.0", "sphinx >=9.0, <10.0"]
+doc = ["furo >=2025.0", "sphinx >=9.0, <10.0"]
 
 [tool.uv.dependency-groups.doc]
 requires-python = ">=3.12"
@@ -54,9 +53,3 @@ include = ["clr_loader*"]
 [tool.pytest.ini_options]
 xfail_strict = true
 testpaths = ["tests"]
-
-[tool.mypy]
-allow-redefinition = true
-
-[tool.pyright]
-pythonPlatform = "All"

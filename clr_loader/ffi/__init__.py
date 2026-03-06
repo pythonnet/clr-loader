@@ -1,4 +1,5 @@
 import sys
+from ctypes import RTLD_GLOBAL
 from pathlib import Path
 
 import cffi
@@ -43,10 +44,10 @@ def load_hostfxr(dotnet_root: Path):
 def load_mono(path: Path | None = None):
     # Preload C++ standard library, Mono needs that and doesn't properly link against it
     if sys.platform == "linux":
-        ffi.dlopen("stdc++", ffi.RTLD_GLOBAL)
+        ffi.dlopen("stdc++", RTLD_GLOBAL)
 
     path_str = str(path) if path else None
-    return ffi.dlopen(path_str, ffi.RTLD_GLOBAL)
+    return ffi.dlopen(path_str, RTLD_GLOBAL)
 
 
 def load_netfx():

@@ -155,5 +155,7 @@ def run_in_subprocess(func, *args, **kwargs):
     p = get_context("spawn").Process(target=func, args=args, kwargs=kwargs)
     p.start()
     p.join()
-    assert p.exitcode == 0, f"Subprocess {func.__name__!r} failed with exit code {p.exitcode}"
-    p.close()
+    try:
+        assert p.exitcode == 0, f"Subprocess {func.__name__!r} failed with exit code {p.exitcode}"
+    finally:
+        p.close()

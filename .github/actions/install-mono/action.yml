@@ -14,9 +14,10 @@ runs:
     - name: Cache setup on Windows
       if: runner.os == 'Windows'
       run: |
-        mkdir -p .choco-cache
-        choco config set cacheLocation $(pwd)/.choco-cache
-      shell: bash
+        New-Item -ItemType Directory -Path .choco-cache -Force | Out-Null
+        choco config set cacheLocation "$PWD/.choco-cache"
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      shell: pwsh
 
     - name: Cache on Windows
       if: runner.os == 'Windows'
@@ -52,13 +53,17 @@ runs:
 
     - name: Install on Windows (x86)
       if: runner.os == 'Windows' && inputs.arch == 'x86'
-      run: choco install --x86 -y mono
-      shell: sh
+      run: |
+        choco install --x86 -y mono
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      shell: pwsh
 
     - name: Install on Windows
       if: runner.os == 'Windows' && inputs.arch != 'x86'
-      run: choco install -y mono
-      shell: sh
+      run: |
+        choco install -y mono
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      shell: pwsh
 
     # ===================================
     #

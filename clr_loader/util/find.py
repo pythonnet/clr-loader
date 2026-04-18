@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from collections.abc import Iterator
 
+from ctypes.util import find_library
+
 from ..types import StrOrPath
 
 from .runtime_spec import DotnetCoreRuntimeSpec
@@ -107,11 +109,17 @@ def find_runtimes() -> Iterator[DotnetCoreRuntimeSpec]:
         return find_runtimes_in_root(dotnet_root)
 
 
-def find_libmono(*, assembly_dir: StrOrPath | None = None, sgen: bool = True) -> Path:  # noqa: F821
+def find_libmono(
+    *, assembly_dir: StrOrPath | None = None, sgen: bool = True
+) -> Path | None:
     """Find a suitable libmono dynamic library
 
-    On Windows and macOS, we check the default installation directories.
+    On Windows, we check the default installation directory.
+    On macOS, we check Homebrew (with architecture awareness) and the framework.
+    On Unix-like systems, we check Homebrew and system locations.
 
+    :param assembly_dir:
+        Optional directory to search for libmono
     :param sgen:
         Whether to look for an SGen or Boehm GC instance. This parameter is
         ignored on Windows, as only ``sgen`` is installed with the default
@@ -119,35 +127,67 @@ def find_libmono(*, assembly_dir: StrOrPath | None = None, sgen: bool = True) ->
     :return:
         Path to usable ``libmono``
     """
-    unix_name = f"mono{'sgen' if sgen else ''}-2.0"
+
     if sys.platform == "win32":
-        if sys.maxsize > 2**32:
-            prog_files = os.environ.get("ProgramFiles")
-        else:
-            prog_files = os.environ.get("ProgramFiles(x86)")
-
-        if prog_files is None:
-            raise RuntimeError("Could not determine Program Files location")
-
-        # Ignore sgen on Windows, the main installation only contains this DLL
-        path = Path(prog_files) / "Mono/bin/mono-2.0-sgen.dll"
-
-    elif sys.platform == "darwin":
-        path = (
-            Path("/Library/Frameworks/Mono.framework/Versions/Current/lib")
-            / f"lib{unix_name}.dylib"
-        )
+        return _find_mono_windows()
 
     else:
-        if assembly_dir is None:
-            from ctypes.util import find_library
+        return _find_mono_unix(assembly_dir=assembly_dir, sgen=sgen)
 
-            path = find_library(unix_name)
+
+def _find_mono_windows() -> Path | None:
+    if sys.maxsize > 2**32:
+        prog_files = os.environ.get("ProgramFiles")
+    else:
+        prog_files = os.environ.get("ProgramFiles(x86)")
+
+    if prog_files is None:
+        raise RuntimeError("Could not determine Program Files location")
+
+    # Ignore sgen on Windows, the main installation only contains this DLL
+    return Path(prog_files) / "Mono/bin/mono-2.0-sgen.dll"
+
+
+def _find_mono_unix(
+    *, assembly_dir: StrOrPath | None = None, sgen: bool = True
+) -> Path | None:
+    macos = sys.platform == "darwin"
+
+    unix_name = f"mono{'sgen' if sgen else ''}-2.0"
+    ext = ".dylib" if macos else ".so"
+
+    lib_filename = f"lib{unix_name}{ext}"
+
+    if assembly_dir is not None:
+        candidate = Path(assembly_dir) / "lib" / lib_filename
+        if candidate.exists():
+            return candidate
+
+    if res := find_library(unix_name):
+        return Path(res)
+
+    if macos:
+        res = (
+            Path("/Library/Frameworks/Mono.framework/Versions/Current/lib")
+            / lib_filename
+        )
+        if res.exists():
+            return res
+
+        # Use HOMEBREW_PREFIX environment variable if available
+        if homebrew_prefix := os.environ.get("HOMEBREW_PREFIX"):
+            res = Path(homebrew_prefix) / "opt/mono/lib" / lib_filename
+            if res.exists():
+                return res
+
+        # Check for native Apple Silicon (arm64)
+        if platform.machine() == "arm64":
+            res = Path("/opt/homebrew/opt/mono/lib") / lib_filename
+            if res.exists():
+                return res
         else:
-            libname: str = "lib" + unix_name + ".so"
-            path = Path(assembly_dir) / "lib" / libname
+            res = Path("/usr/local/opt/mono/lib") / lib_filename
+            if res.exists():
+                return res
 
-    if path is None:
-        raise RuntimeError("Could not find libmono")
-
-    return Path(path)
+    raise RuntimeError("Could not find libmono")

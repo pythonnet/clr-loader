@@ -77,20 +77,6 @@ jobs:
         python: ['3.14', '3.13', '3.12', '3.11', '3.10']
 
         exclude:
-          # Broken ctypes find_library
-          - os:
-              category: macos
-              platform: arm64
-            python: '3.10'
-          - os:
-              category: macos
-              platform: arm64
-            python: '3.11'
-          - os:
-              category: macos
-              platform: arm64
-            python: '3.12'
-
           # Fails to call mono methods
           - os:
               category: windows

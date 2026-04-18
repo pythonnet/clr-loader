@@ -38,13 +38,13 @@ namespace ClrLoader
         bool _disposed = false;
 
         public AppDomain Domain { get; }
-        public Dictionary<(string, string, string), IntPtr> _functors;
+        public Dictionary<Tuple<string, string, string>, IntPtr> _functors;
         public HashSet<string> _resolvedAssemblies;
 
         public DomainData(AppDomain domain)
         {
             Domain = domain;
-            _functors = new Dictionary<(string, string, string), IntPtr>();
+            _functors = new Dictionary<Tuple<string, string, string>, IntPtr>();
             _resolvedAssemblies = new HashSet<string>();
         }
 
@@ -76,7 +76,7 @@ namespace ClrLoader
                 installResolver(assemblyPath);
                 var assemblyName = AssemblyName.GetAssemblyName(assemblyPath).Name;
 
-                var key = (assemblyName, typeName, function);
+                var key = Tuple.Create(assemblyName, typeName, function);
 
                 IntPtr result;
                 if (!_functors.TryGetValue(key, out result))

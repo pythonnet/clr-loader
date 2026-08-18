@@ -1,8 +1,8 @@
 from abc import ABCMeta, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from os import PathLike
 from typing import Any
-from collections.abc import Callable
 
 __all__ = ["StrOrPath"]
 
@@ -70,7 +70,7 @@ class ClrFunction:
 
 class Assembly:
     def __init__(self, runtime: "Runtime", path: StrOrPath):
-        self._runtime: "Runtime" = runtime
+        self._runtime: Runtime = runtime
         self._path: StrOrPath = path
 
     def get_function(self, name: str, func: str | None = None) -> ClrFunction:
@@ -108,7 +108,6 @@ class Runtime(metaclass=ABCMeta):
     @abstractmethod
     def info(self) -> RuntimeInfo:
         """Get configuration and version information"""
-        pass
 
     def get_assembly(self, assembly_path: StrOrPath) -> Assembly:
         """Get an assembly wrapper
@@ -124,7 +123,6 @@ class Runtime(metaclass=ABCMeta):
         self, assembly_path: StrOrPath, typename: str, function: str
     ) -> Callable[[Any, int], Any]:
         """Private function to retrieve a low-level callable object"""
-        pass
 
     @abstractmethod
     def shutdown(self) -> None:
@@ -132,7 +130,6 @@ class Runtime(metaclass=ABCMeta):
 
         Implementations should still be able to "reinitialize", thus the final
         cleanup will usually happen in an ``atexit`` handler."""
-        pass
 
     def __del__(self) -> None:
         self.shutdown()

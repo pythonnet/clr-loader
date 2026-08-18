@@ -1,6 +1,6 @@
 import sys
-from pathlib import Path
 from collections.abc import Generator
+from pathlib import Path
 
 from .ffi import ffi, load_hostfxr
 from .types import Runtime, RuntimeInfo, StrOrPath

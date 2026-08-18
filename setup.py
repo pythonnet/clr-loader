@@ -1,7 +1,7 @@
 import logging
+from os import putenv
 from pathlib import Path
 from typing import Any, cast
-from os import putenv
 
 from setuptools import Command, Distribution, setup
 from setuptools.command.bdist_wheel import bdist_wheel as _bdist_wheel
@@ -23,7 +23,7 @@ class build_dotnet(Command):
     """Build command for dotnet-cli based builds"""
 
     description = "Build DLLs with dotnet-cli"
-    user_options = [
+    user_options = [  # noqa
         ("dotnet-config=", None, "dotnet build configuration"),
         (
             "inplace",
@@ -59,13 +59,10 @@ class build_dotnet(Command):
             output = build_lib.absolute() / cast(str, lib.args.pop("output"))
             rename: dict[str, str] = lib.args.pop("rename", {})
 
-            opts = sum(
-                [
-                    ["--" + name.replace("_", "-"), value]
-                    for name, value in lib.args.items()
-                ],
-                [],
-            )
+            opts = []
+
+            for name, value in lib.args.items():
+                opts.extend(["--" + name.replace("_", "-"), value])
 
             opts.extend(["--configuration", self.dotnet_config])
             opts.extend(["--output", output])

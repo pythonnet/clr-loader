@@ -30,9 +30,10 @@ class NetFx(Runtime):
             version="<undefined>",
             initialized=True,
             shutdown=_FW is None,
-            properties=dict(
-                domain=self._domain_name or "", config_file=str(self._config_file)
-            ),
+            properties={
+                "domain": self._domain_name or "",
+                "config_file": str(self._config_file),
+            },
         )
 
     def _get_callable(self, assembly_path: StrOrPath, typename: str, function: str):

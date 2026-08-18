@@ -7,16 +7,16 @@ from .util.find import find_dotnet_root, find_libmono, find_runtimes
 from .util.runtime_spec import DotnetCoreRuntimeSpec
 
 __all__ = [
-    "get_mono",
-    "get_netfx",
-    "get_coreclr",
+    "Assembly",
+    "DotnetCoreRuntimeSpec",
+    "Runtime",
+    "RuntimeInfo",
     "find_dotnet_root",
     "find_libmono",
     "find_runtimes",
-    "Runtime",
-    "Assembly",
-    "RuntimeInfo",
-    "DotnetCoreRuntimeSpec",
+    "get_coreclr",
+    "get_mono",
+    "get_netfx",
 ]
 
 

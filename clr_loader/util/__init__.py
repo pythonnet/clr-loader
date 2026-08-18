@@ -9,8 +9,8 @@ from .hostfxr_errors import get_hostfxr_error
 __all__ = [
     "check_result",
     "find_dotnet_root",
-    "path_as_string",
     "optional_path_as_string",
+    "path_as_string",
 ]
 
 

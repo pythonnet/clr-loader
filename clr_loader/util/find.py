@@ -2,13 +2,11 @@ import os
 import platform
 import shutil
 import sys
-from pathlib import Path
 from collections.abc import Iterator
-
 from ctypes.util import find_library
+from pathlib import Path
 
 from ..types import StrOrPath
-
 from .runtime_spec import DotnetCoreRuntimeSpec
 
 

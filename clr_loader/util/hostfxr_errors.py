@@ -10,7 +10,7 @@ def get_hostfxr_error(hresult: int) -> ClrError | None:
         return None
 
 
-_ERRORS = dict(
+_ERRORS = dict(  # noqa
     Success=0,
     Success_HostAlreadyInitialized=0x00000001,
     Success_DifferentRuntimeProperties=0x00000002,

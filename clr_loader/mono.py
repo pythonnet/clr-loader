@@ -1,8 +1,8 @@
 import atexit
 import re
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
-from collections.abc import Sequence
 
 from .ffi import ffi, load_mono
 from .types import Runtime, RuntimeInfo, StrOrPath

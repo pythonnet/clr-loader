@@ -24,15 +24,15 @@ def load_hostfxr(dotnet_root: Path):
 
     error_report: list[str] = []
 
-    for hostfxr_path in reversed(sorted(hostfxr_paths, key=_path_to_version)):
+    for hostfxr_path in sorted(hostfxr_paths, key=_path_to_version, reverse=True):
         try:
             return ffi.dlopen(str(hostfxr_path))
-        except Exception as err:
+        except Exception as err:  # noqa
             error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
     try:
         return ffi.dlopen(str(dotnet_root / hostfxr_name))
-    except Exception as err:
+    except Exception as err:  # noqa
         error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
     raise RuntimeError(
@@ -72,7 +72,7 @@ def _path_to_version(path: Path) -> tuple[int, int, int]:
         version_part = name.split("-")[0]
         res = list(map(int, version_part.split(".")))
         return tuple(res + [0, 0, 0])[:3]
-    except Exception:
+    except Exception:  # noqa
         return (0, 0, 0)
 
 

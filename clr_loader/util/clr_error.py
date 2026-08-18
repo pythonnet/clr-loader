@@ -21,4 +21,4 @@ class ClrError(Exception):
             return f"{hex(self.hresult)}"
 
     def __repr__(self):
-        return f"<ClrError {str(self)}>"
+        return f"<ClrError {self!s}>"

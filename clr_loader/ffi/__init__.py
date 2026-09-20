@@ -30,10 +30,11 @@ def load_hostfxr(dotnet_root: Path):
         except Exception as err:  # noqa
             error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
 
+    direct_path = dotnet_root / hostfxr_name
     try:
-        return ffi.dlopen(str(dotnet_root / hostfxr_name))
+        return ffi.dlopen(str(direct_path))
     except Exception as err:  # noqa
-        error_report.append(f"Path {hostfxr_path} gave the following error:\n{err}")
+        error_report.append(f"Path {direct_path} gave the following error:\n{err}")
 
     raise RuntimeError(
         f"Could not find a suitable hostfxr library in {dotnet_root}. The following paths were scanned:\n\n"

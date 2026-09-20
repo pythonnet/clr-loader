@@ -39,7 +39,7 @@ runs:
       uses: actions/cache@v5
       with:
         path: .brew-cache
-        key: mono-brew-${{ runner.os }}-${{ inputs.arch }}
+        key: mono-brew-${{ runner.os }}
 
     # ===================================
 
@@ -58,24 +58,17 @@ runs:
         if ($LASTEXITCODE) { exit $LASTEXITCODE }
       shell: pwsh
 
-    - name: Install on Windows
-      if: runner.os == 'Windows' && inputs.arch != 'x86'
+    - name: Install on Windows (x64)
+      if: runner.os == 'Windows' && inputs.arch == 'x64'
       run: |
         choco install -y mono
         if ($LASTEXITCODE) { exit $LASTEXITCODE }
       shell: pwsh
 
     # ===================================
-    #
-    - name: Install on macOS (x86_64)
-      if: runner.os == 'macOS' && inputs.arch == 'x64'
-      run: |
-        arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        arch -x86_64 /usr/local/bin/brew install --ignore-dependencies mono
-      shell: sh
 
     - name: Install on macOS (arm64)
-      if: runner.os == 'macOS' && inputs.arch != 'x64'
+      if: runner.os == 'macOS'
       run: |
         brew update
         brew install --ignore-dependencies mono

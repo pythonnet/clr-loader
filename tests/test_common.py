@@ -6,59 +6,49 @@ import pytest
 
 
 def test_mono(example_netstandard: Path):
-    from clr_loader import get_mono
-
-    mono = get_mono()
-    asm = mono.get_assembly(example_netstandard / "example.dll")
-
-    run_tests(asm)
+    run_in_subprocess(_do_test_mono, example_netstandard)
 
 
 def test_mono_debug(example_netstandard: Path):
-    from clr_loader import get_mono
-
-    mono = get_mono(
+    run_in_subprocess(
+        _do_test_mono,
+        example_netstandard,
         debug=True,
         jit_options=[
-            "--debugger-agent=address=0.0.0.0:5831,transport=dt_socket,server=y"
+            "--debugger-agent=address=0.0.0.0:5831,transport=dt_socket,server=y,suspend=n"
         ],
     )
-    asm = mono.get_assembly(example_netstandard / "example.dll")
-
-    run_tests(asm)
 
 
 def test_mono_signal_chaining(example_netstandard: Path):
-    from clr_loader import get_mono
-
-    mono = get_mono(set_signal_chaining=True)
-    asm = mono.get_assembly(example_netstandard / "example.dll")
-
-    run_tests(asm)
+    run_in_subprocess(_do_test_mono, example_netstandard, set_signal_chaining=True)
 
 
 def test_mono_trace_mask(example_netstandard: Path):
-    from clr_loader import get_mono
-
-    mono = get_mono(trace_mask="all")
-    asm = mono.get_assembly(example_netstandard / "example.dll")
-
-    run_tests(asm)
+    run_in_subprocess(_do_test_mono, example_netstandard, trace_mask="all")
 
 
 def test_mono_trace_level(example_netstandard: Path):
-    from clr_loader import get_mono
-
-    mono = get_mono(trace_level="message")
-    asm = mono.get_assembly(example_netstandard / "example.dll")
-
-    run_tests(asm)
+    run_in_subprocess(_do_test_mono, example_netstandard, trace_level="message")
 
 
 def test_mono_set_dir(example_netstandard: Path):
+    for candidate in ["/usr/lib", "/usr/lib64", "/usr/local/lib", "/opt/homebrew/lib"]:
+        if (Path(candidate) / "mono").is_dir():
+            assembly_dir = candidate
+            break
+    else:
+        pytest.skip("Could not find a valid mono assembly dir")
+
+    run_in_subprocess(
+        _do_test_mono, example_netstandard, assembly_dir=assembly_dir, config_dir="/etc"
+    )
+
+
+def _do_test_mono(example_netstandard: Path, **kwargs):
     from clr_loader import get_mono
 
-    mono = get_mono(assembly_dir="/usr", config_dir="/etc")
+    mono = get_mono(**kwargs)
     asm = mono.get_assembly(example_netstandard / "example.dll")
 
     run_tests(asm)

@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
       with:
-        fetch-depths: 0
+        fetch-depth: 0
     - uses: astral-sh/setup-uv@v7
     - name: Install Ruff
       run: uv tool install ruff
@@ -132,7 +132,7 @@ jobs:
 
     - name: Deploy to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      if: startsWith(github.ref, 'refs/head/main')
+      if: startsWith(github.ref, 'refs/heads/main')
       with:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/

@@ -161,31 +161,31 @@ def _find_mono_unix(
         if candidate.exists():
             return candidate
 
-    if res := find_library(unix_name):
-        return Path(res)
+    if lib_path := find_library(unix_name):
+        return Path(lib_path)
 
     if macos:
-        res = (
+        candidate = (
             Path("/Library/Frameworks/Mono.framework/Versions/Current/lib")
             / lib_filename
         )
-        if res.exists():
-            return res
+        if candidate.exists():
+            return candidate
 
         # Use HOMEBREW_PREFIX environment variable if available
         if homebrew_prefix := os.environ.get("HOMEBREW_PREFIX"):
-            res = Path(homebrew_prefix) / "opt/mono/lib" / lib_filename
-            if res.exists():
-                return res
+            candidate = Path(homebrew_prefix) / "opt/mono/lib" / lib_filename
+            if candidate.exists():
+                return candidate
 
         # Check for native Apple Silicon (arm64)
         if platform.machine() == "arm64":
-            res = Path("/opt/homebrew/opt/mono/lib") / lib_filename
-            if res.exists():
-                return res
+            candidate = Path("/opt/homebrew/opt/mono/lib") / lib_filename
+            if candidate.exists():
+                return candidate
         else:
-            res = Path("/usr/local/opt/mono/lib") / lib_filename
-            if res.exists():
-                return res
+            candidate = Path("/usr/local/opt/mono/lib") / lib_filename
+            if candidate.exists():
+                return candidate
 
     raise RuntimeError("Could not find libmono")

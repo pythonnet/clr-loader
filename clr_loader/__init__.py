@@ -68,6 +68,14 @@ def get_mono(
         - SIGUSR2
 
         This currently only works on POSIX platforms
+    :param trace_mask:
+        The Mono trace mask to use, passed to
+        ``mono_trace_set_mask_string``. For example, ``"all"`` enables all
+        trace messages.
+    :param trace_level:
+        The minimum Mono trace level to log, passed to
+        ``mono_trace_set_level_string``. For example, ``"message"`` enables
+        message-level logging and more severe messages.
     """
     from .mono import Mono
 
@@ -85,6 +93,8 @@ def get_mono(
         assembly_dir=assembly_dir,
         config_dir=config_dir,
         set_signal_chaining=set_signal_chaining,
+        trace_mask=trace_mask,
+        trace_level=trace_level,
     )
     return impl
 

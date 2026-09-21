@@ -36,6 +36,8 @@ jobs:
       run: ruff format --check
     - name: Check lints
       run: ruff check
+    - name: Check types
+      run: uv run --group dev ty check clr_loader
 
   test:
     runs-on: ${{ matrix.os.instance }}

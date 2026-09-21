@@ -10,15 +10,16 @@ _FW: Any = None
 
 class NetFx(Runtime):
     def __init__(self, domain: str | None = None, config_file: Path | None = None):
-        self._domain: str | None = None
+        self._domain: Any = None
 
         initialize()
+        config_file_s: Any
         if config_file is not None:
             config_file_s = str(config_file).encode("utf8")
         else:
             config_file_s = ffi.NULL
 
-        domain_s = domain.encode("utf8") if domain else ffi.NULL
+        domain_s: Any = domain.encode("utf8") if domain else ffi.NULL
 
         self._domain_name: str | None = domain
         self._config_file: Path | None = config_file

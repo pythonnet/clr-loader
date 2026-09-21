@@ -64,10 +64,8 @@ target/
 # pyenv
 .python-version
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# ty
+.ty_cache/
 
 # Pyre type checker
 .pyre/

@@ -186,7 +186,12 @@ def initialize(
 
     build = _MONO.mono_get_runtime_build_info()
     _check_result(build, "Failed to get Mono version")
-    ver_str = ffi.string(build).decode("utf8")  # e.g. '6.12.0.122 (tarball)'
+    build_bytes = ffi.string(build)
+    ver_str = (
+        build_bytes.decode("utf8")
+        if isinstance(build_bytes, bytes)
+        else str(build_bytes)
+    )  # e.g. '6.12.0.122 (tarball)'
 
     ver = re.match(r"^(?P<major>\d+)\.(?P<minor>\d+)\.[\d.]+", ver_str)
     if ver is not None:

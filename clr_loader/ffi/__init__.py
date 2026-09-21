@@ -72,7 +72,8 @@ def _path_to_version(path: Path) -> tuple[int, int, int]:
         # Handle pre-release versions like "10.0.0-rc.1" by taking only the version part
         version_part = name.split("-")[0]
         res = list(map(int, version_part.split(".")))
-        return tuple(res + [0, 0, 0])[:3]
+        v = (res + [0, 0, 0])[:3]
+        return (v[0], v[1], v[2])
     except Exception:  # noqa
         return (0, 0, 0)
 

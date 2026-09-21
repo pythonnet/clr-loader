@@ -1,6 +1,7 @@
 import sys
 from collections.abc import Generator
 from pathlib import Path
+from typing import Any
 
 from .ffi import ffi, load_hostfxr
 from .types import Runtime, RuntimeInfo, StrOrPath
@@ -144,7 +145,7 @@ class DotnetCoreRuntime(Runtime):
 def _get_handle_for_runtime_config(
     dll, dotnet_root: StrOrPath, runtime_config: StrOrPath
 ):
-    params = ffi.new("hostfxr_initialize_parameters*")
+    params: Any = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     # params.host_path = ffi.new("char_t[]", encode(sys.executable))
     params.host_path = ffi.NULL
@@ -164,7 +165,7 @@ def _get_handle_for_runtime_config(
 def _get_handle_for_dotnet_command_line(
     dll, dotnet_root: StrOrPath, entry_dll: StrOrPath
 ):
-    params = ffi.new("hostfxr_initialize_parameters*")
+    params: Any = ffi.new("hostfxr_initialize_parameters*")
     params.size = ffi.sizeof("hostfxr_initialize_parameters")
     params.host_path = ffi.NULL
     dotnet_root_p = ffi.new("char_t[]", encode(str(Path(dotnet_root))))
@@ -209,4 +210,7 @@ else:
         return string.encode("utf8")
 
     def decode(char_ptr) -> str:
-        return ffi.string(char_ptr).decode("utf8")
+        res = ffi.string(char_ptr)
+        if isinstance(res, bytes):
+            return res.decode("utf8")
+        return str(res)
